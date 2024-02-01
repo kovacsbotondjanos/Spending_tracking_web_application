@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-public class PostDataIntoDataBase {
-    @PostMapping("/enterIntoDataBase/v1")
+public class DeleteDataFromDataBaseByJSONObject {
+    @PostMapping("/deleteFromDataBase/v1")
     ResponseEntity<String> insertIntoDataBase(@RequestBody DataBaseWriteRecord dbWrite){
         try{
             (new DataBaseWriteHandler(dbWrite)).insertIntoDataBase();

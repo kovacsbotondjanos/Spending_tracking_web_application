@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin
 @RestController
-public class DeleteDataFromDataBase {
+public class PostDataIntoDataBaseByJSONObject {
     @PostMapping("/enterIntoDataBase/v1")
     ResponseEntity<String> insertIntoDataBase(@RequestBody DataBaseWriteRecord dbWrite){
         try{
+            //TODO: use static methods instead of creating an instance
             (new DataBaseWriteHandler(dbWrite)).insertIntoDataBase();
             return new ResponseEntity<>("Successfully inserted data into the database", HttpStatus.OK);
         }

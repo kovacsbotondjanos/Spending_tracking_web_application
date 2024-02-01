@@ -7,6 +7,7 @@ import java.sql.SQLException;
 public class DataBaseWriteHandler {
     DataBaseWriteRecord dbr;
     public DataBaseWriteHandler(DataBaseWriteRecord dbr){
+        //TODO: parse values and check for invalid data here
         this.dbr = dbr;
     }
     public void insertIntoDataBase(){
