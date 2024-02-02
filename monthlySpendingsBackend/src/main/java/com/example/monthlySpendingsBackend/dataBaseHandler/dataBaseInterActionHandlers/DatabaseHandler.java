@@ -7,11 +7,11 @@ import java.util.*;
 
 public class DatabaseHandler {
 
-    PreparedStatement insertStatement;
-    PreparedStatement selectStatementInRange;
-    PreparedStatement deleteStatement;
-    Connection connection;
-    String dbName;
+    protected final PreparedStatement insertStatement;
+    private final PreparedStatement selectStatementInRange;
+    private final PreparedStatement deleteStatement;
+    protected final Connection connection;
+    protected final String dbName;
 
     public DatabaseHandler(String dbName) throws SQLException {
         this.dbName = dbName;

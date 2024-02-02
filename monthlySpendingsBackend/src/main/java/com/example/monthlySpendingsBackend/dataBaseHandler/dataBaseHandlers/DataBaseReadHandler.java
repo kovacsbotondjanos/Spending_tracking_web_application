@@ -13,14 +13,14 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class DataBaseReadHandler{
-    private int year;
-    private int month;
+    private final int year;
+    private final int month;
     private Map<Date, List<Integer>> groceries;
     private Map<Date, List<Integer>> commute;
     private Map<Date, List<Integer>> extra;
     private Map<Date, List<Integer>> rent;
     private Map<Date, List<Integer>> income;
-    private int lastDay;
+    private final int lastDay;
 
     public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month){
         return (new DataBaseReadHandler(year, month)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
@@ -29,24 +29,13 @@ public class DataBaseReadHandler{
     private DataBaseReadHandler(String year, String month) throws DateTimeException, NumberFormatException{
         this.year = Integer.parseInt(year);
         this.month = Integer.parseInt(month);
-        YearMonth.of(this.year, this.month);
         lastDay = YearMonth.of(this.year, this.month).atEndOfMonth().getDayOfMonth();
         List<Thread> threadList = List.of(
-                new Thread(() -> {
-                    this.groceries = dataBaseQueryByMonth("GROCERIES");
-                }),
-                new Thread(() -> {
-                    this.commute = dataBaseQueryByMonth("COMMUTE");
-                }),
-                new Thread(() -> {
-                    this.extra = dataBaseQueryByMonth("EXTRA");
-                }),
-                new Thread(() -> {
-                    this.rent = dataBaseQueryByMonth("RENT");
-                }),
-                new Thread(() -> {
-                    this.income = dataBaseQueryByMonth("INCOME");
-                })
+                new Thread(() -> this.groceries = dataBaseQueryByMonth("GROCERIES")),
+                new Thread(() -> this.commute = dataBaseQueryByMonth("COMMUTE")),
+                new Thread(() -> this.extra = dataBaseQueryByMonth("EXTRA")),
+                new Thread(() -> this.rent = dataBaseQueryByMonth("RENT")),
+                new Thread(() -> this.income = dataBaseQueryByMonth("INCOME"))
         );
         for(Thread t : threadList){
             t.start();
@@ -61,7 +50,7 @@ public class DataBaseReadHandler{
     }
 
     private Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
-        Map<Integer, DailyStatisticRecord> dsList = new HashMap();
+        Map<Integer, DailyStatisticRecord> dsList = new HashMap<>();
         IntStream.rangeClosed(1, lastDay).forEach(i -> {
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
             LocalDate localDate = LocalDate.of(year, month, i);

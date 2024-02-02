@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.TimeZone;
 
 public class BankBalanceHandler extends DatabaseHandler{
-    PreparedStatement selectStatement;
-    PreparedStatement updateStatement;
+    private final PreparedStatement selectStatement;
+    private final PreparedStatement updateStatement;
 
     public BankBalanceHandler() throws SQLException {
         super("BANKBALANCE");

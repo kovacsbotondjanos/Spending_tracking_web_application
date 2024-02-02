@@ -7,11 +7,11 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordReprese
 import java.sql.SQLException;
 
 public class DataBaseWriteAndDeleteHandler {
-    private String dataBaseName;
-    private int year;
-    private int month;
-    private int day;
-    private int amount;
+    private final String dataBaseName;
+    private final int year;
+    private final int month;
+    private final int day;
+    private final int amount;
 
     public static void DeleteFromDataBase(InteractionRecord dbDelete){
         (new DataBaseWriteAndDeleteHandler(dbDelete)).interactWithDataBase(Event.DELETE);
