@@ -25,9 +25,12 @@ export default{
             const year = this.today.getFullYear();
             const month = this.monthFormatCorrection(this.today.getMonth()+1);
             const day = this.today.getDate();
+            if(day < 10){
+                return year + "-" + month + "-0" + day;
+            }
             return year + "-" + month + "-" + day;
         },
-        sendPostRequest() {
+        sendPostRequestToInsert() {
             if(this.formData !== undefined && this.formData.amount > 0 && this.formData.date != ""){
                 const dateSplit = this.formData.date.split('-');
                 if(dateSplit.length != 3){
@@ -41,6 +44,32 @@ export default{
                     amount: this.formData.amount,
                 };
                 fetch("http://localhost:8080/enterIntoDataBase/v1", {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(() => this.fillDays(this.today.getFullYear(), this.today.getMonth()+1))
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+            }
+        },
+        sendPostRequestToDelete() {
+            if(this.formData !== undefined && this.formData.amount > 0 && this.formData.date != ""){
+                const dateSplit = this.formData.date.split('-');
+                if(dateSplit.length != 3){
+                    return;
+                }
+                const data = { 
+                    year: dateSplit[0],
+                    month: dateSplit[1],
+                    day: dateSplit[2],
+                    dataBaseName: this.formData.type,
+                    amount: this.formData.amount,
+                };
+                fetch("http://localhost:8080/deleteFromDataBase/v1", {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
@@ -106,7 +135,7 @@ export default{
 
 <template>
     <div class="left">
-        <form @submit.prevent="sendPostRequest">
+        <form @submit.prevent="sendPostRequestToInsert">
             <label for="type">Type of the expense:</label><br>
             <select v-model="this.formData.type" id="type">
                 <option value="groceries" default>groceries</option>
@@ -123,6 +152,24 @@ export default{
             <input v-model="this.formData.date" type="date" id="date">
             <br>
             <button type="submit">Submit</button>
+        </form>
+        <form @submit.prevent="sendPostRequestToDelete">
+            <label for="type">Type of the expense:</label><br>
+            <select v-model="this.formData.type" id="type">
+                <option value="groceries" default>groceries</option>
+                <option value="commute">commute</option>
+                <option value="extra">extra</option>
+                <option value="rent">rent</option>
+                <option value="income">income</option>
+            </select>
+            <br>
+            <label for="amount">Amount:</label><br>
+            <input v-model="this.formData.amount" type="number" id="amount" min=0>
+            <br>
+            <label for="date">Date of the expense:</label><br>
+            <input v-model="this.formData.date" type="date" id="date">
+            <br>
+            <button type="submit">Delete</button>
         </form>
     </div>
     <h1>{{ this.today.getFullYear() }}-{{ monthFormatCorrection(this.today.getMonth() + 1) }}</h1>

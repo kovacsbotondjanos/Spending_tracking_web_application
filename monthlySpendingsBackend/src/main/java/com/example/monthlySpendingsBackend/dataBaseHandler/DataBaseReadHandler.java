@@ -12,7 +12,7 @@ import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class DataBaseReadHandler implements Serializable {
+public class DataBaseReadHandler{
     private int year;
     private int month;
     private Map<Date, List<Integer>> groceries;

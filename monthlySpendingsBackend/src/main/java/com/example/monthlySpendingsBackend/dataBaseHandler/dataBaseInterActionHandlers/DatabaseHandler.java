@@ -9,6 +9,7 @@ public class DatabaseHandler {
 
     PreparedStatement insertStatement;
     PreparedStatement selectStatementInRange;
+    PreparedStatement deleteStatement;
     Connection connection;
     String dbName;
 
@@ -26,6 +27,8 @@ public class DatabaseHandler {
         insertStatement = connection.prepareStatement(insertQuery);
         String selectQueryInRange = String.format("SELECT * FROM %s WHERE YEAR(DATE)=? AND MONTH(DATE)=?", this.dbName);
         selectStatementInRange = connection.prepareStatement(selectQueryInRange);
+        String deleteQuery = String.format("DELETE FROM %s WHERE DATE=? AND AMOUNT=?", this.dbName);
+        deleteStatement = connection.prepareStatement(deleteQuery);
     }
 
     public Map<Date, List<Integer>> getExpensesByGivenMonth(int year, int month) throws SQLException{
@@ -53,14 +56,30 @@ public class DatabaseHandler {
         LocalDate localDate = LocalDate.of(year, month, day);
         insertStatement.setObject(1, localDate);
         insertStatement.setInt(2, amount);
-
         insertStatement.executeUpdate();
+
         BankBalanceHandler bankBalanceHandler = new BankBalanceHandler();
         if(dbName.equals("income")){
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, amount);
         }
         else{
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, -amount);
+        }
+    }
+
+    public void deleteFromDataBaseByGivenDayAndAmount(int year, int month, int day, int amount) throws SQLException{
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        LocalDate localDate = LocalDate.of(year, month, day);
+        deleteStatement.setObject(1, localDate);
+        deleteStatement.setObject(2, amount);
+        deleteStatement.executeUpdate();
+
+        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler();
+        if(dbName.equals("income")){
+            bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, -amount);
+        }
+        else{
+            bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, amount);
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler;
 
-public record DataBaseDeletionRecord(
+public record DataBaseInteractionRecord(
         String year,
         String month,
         String day,
-        String type,
-        int amount) {}
+        String dataBaseName,
+        int amount) { }
