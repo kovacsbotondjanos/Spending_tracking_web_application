@@ -1,9 +1,9 @@
-package com.example.monthlySpendingsBackend.dataBaseHandler;
+package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.BankBalanceHandler;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.DatabaseHandler;
+import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.DailyStatisticRecord;
 
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.DateTimeException;
@@ -22,7 +22,11 @@ public class DataBaseReadHandler{
     private Map<Date, List<Integer>> income;
     private int lastDay;
 
-    public DataBaseReadHandler(String year, String month) throws DateTimeException, NumberFormatException{
+    public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month){
+        return (new DataBaseReadHandler(year, month)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
+    }
+
+    private DataBaseReadHandler(String year, String month) throws DateTimeException, NumberFormatException{
         this.year = Integer.parseInt(year);
         this.month = Integer.parseInt(month);
         YearMonth.of(this.year, this.month);
@@ -56,7 +60,7 @@ public class DataBaseReadHandler{
         }
     }
 
-    public Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
+    private Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
         Map<Integer, DailyStatisticRecord> dsList = new HashMap();
         IntStream.rangeClosed(1, lastDay).forEach(i -> {
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -88,7 +92,7 @@ public class DataBaseReadHandler{
         });
         return dsList;
     }
-    public int getBankBalanceFromDataBase(int day){
+    private int getBankBalanceFromDataBase(int day){
         try {
             return (new BankBalanceHandler()).getBankBalanceByGivenDay(year, month, day);
         }

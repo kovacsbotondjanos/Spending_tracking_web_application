@@ -1,17 +1,27 @@
-package com.example.monthlySpendingsBackend.dataBaseHandler;
+package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers;
 
-import com.example.monthlySpendingsBackend.DataBaseEvent.Event;
+import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseEvent.Event;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.DatabaseHandler;
+import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.InteractionRecord;
 
 import java.sql.SQLException;
 
 public class DataBaseWriteAndDeleteHandler {
-    String dataBaseName;
+    private String dataBaseName;
     private int year;
     private int month;
     private int day;
     private int amount;
-    public DataBaseWriteAndDeleteHandler(DataBaseInteractionRecord dbr){
+
+    public static void DeleteFromDataBase(InteractionRecord dbDelete){
+        (new DataBaseWriteAndDeleteHandler(dbDelete)).interactWithDataBase(Event.DELETE);
+    }
+
+    public static void InsertIntoDataBase(InteractionRecord dbWrite){
+        (new DataBaseWriteAndDeleteHandler(dbWrite)).interactWithDataBase(Event.INSERT);
+    }
+
+    private DataBaseWriteAndDeleteHandler(InteractionRecord dbr){
         //TODO: parse values and check for invalid data here
         dataBaseName = dbr.dataBaseName();
         year = Integer.parseInt(dbr.year());
@@ -20,7 +30,7 @@ public class DataBaseWriteAndDeleteHandler {
         amount = dbr.amount();
     }
 
-    public void interactWithDataBase(Event dataBaseInterActionEvent){
+    private void interactWithDataBase(Event dataBaseInterActionEvent){
         try{
             switch(dataBaseInterActionEvent){
                 case INSERT -> (new DatabaseHandler(dataBaseName)).insertIntoDataBaseByGivenDay(

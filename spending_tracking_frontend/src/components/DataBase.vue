@@ -135,7 +135,7 @@ export default{
 
 <template>
     <div class="left">
-        <form @submit.prevent="sendPostRequestToInsert">
+        <form onsubmit="return false;">
             <label for="type">Type of the expense:</label><br>
             <select v-model="this.formData.type" id="type">
                 <option value="groceries" default>groceries</option>
@@ -151,25 +151,8 @@ export default{
             <label for="date">Date of the expense:</label><br>
             <input v-model="this.formData.date" type="date" id="date">
             <br>
-            <button type="submit">Submit</button>
-        </form>
-        <form @submit.prevent="sendPostRequestToDelete">
-            <label for="type">Type of the expense:</label><br>
-            <select v-model="this.formData.type" id="type">
-                <option value="groceries" default>groceries</option>
-                <option value="commute">commute</option>
-                <option value="extra">extra</option>
-                <option value="rent">rent</option>
-                <option value="income">income</option>
-            </select>
-            <br>
-            <label for="amount">Amount:</label><br>
-            <input v-model="this.formData.amount" type="number" id="amount" min=0>
-            <br>
-            <label for="date">Date of the expense:</label><br>
-            <input v-model="this.formData.date" type="date" id="date">
-            <br>
-            <button type="submit">Delete</button>
+            <button v-on:click="sendPostRequestToInsert">Submit</button>
+            <button v-on:click="sendPostRequestToDelete">Delete</button>
         </form>
     </div>
     <h1>{{ this.today.getFullYear() }}-{{ monthFormatCorrection(this.today.getMonth() + 1) }}</h1>

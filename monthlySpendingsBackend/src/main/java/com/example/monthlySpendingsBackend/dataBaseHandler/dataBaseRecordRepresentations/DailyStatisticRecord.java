@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.dataBaseHandler;
+package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations;
 
 import java.util.List;
 

@@ -1,8 +1,7 @@
 package com.example.monthlySpendingsBackend.dataBaseQueryHandler;
 
-import com.example.monthlySpendingsBackend.DataBaseEvent.Event;
-import com.example.monthlySpendingsBackend.dataBaseHandler.DataBaseWriteAndDeleteHandler;
-import com.example.monthlySpendingsBackend.dataBaseHandler.DataBaseInteractionRecord;
+import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers.DataBaseWriteAndDeleteHandler;
+import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.InteractionRecord;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PostDataIntoDataBaseByJSONObject {
     @PostMapping("/enterIntoDataBase/v1")
-    ResponseEntity<String> insertIntoDataBase(@RequestBody DataBaseInteractionRecord dbWrite){
+    ResponseEntity<String> insertIntoDataBase(@RequestBody InteractionRecord dbWrite){
         try{
-            (new DataBaseWriteAndDeleteHandler(dbWrite)).interactWithDataBase(Event.INSERT);
+            DataBaseWriteAndDeleteHandler.InsertIntoDataBase(dbWrite);
             return new ResponseEntity<>("Successfully inserted data into the database", HttpStatus.OK);
         }
         catch(Exception e){

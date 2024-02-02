@@ -1,7 +1,7 @@
 package com.example.monthlySpendingsBackend.dataBaseQueryHandler;
 
-import com.example.monthlySpendingsBackend.dataBaseHandler.DailyStatisticRecord;
-import com.example.monthlySpendingsBackend.dataBaseHandler.DataBaseReadHandler;
+import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.DailyStatisticRecord;
+import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers.DataBaseReadHandler;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DateTimeException;
@@ -15,7 +15,7 @@ public class GetDataInResponseFormat {
     @ResponseBody()
     public Map<Integer, DailyStatisticRecord> getDailyStatistics(@PathVariable String year, @PathVariable String month) throws Exception {
         try{
-            return (new DataBaseReadHandler(year, month)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
+            return DataBaseReadHandler.DataBaseRead(year, month);
         }
         //TODO: exception handling
         catch(DateTimeException de){
