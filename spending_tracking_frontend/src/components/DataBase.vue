@@ -168,6 +168,7 @@ export default{
                 <th>Groceries</th>
                 <th>Extra</th>
                 <th>Rent</th>
+                <th>Commute</th>
                 <th>Income</th>
                 <th>Bank Balance</th>
             </tr>
@@ -176,6 +177,7 @@ export default{
                 <td>{{ row.values.groceries.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.extra.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.rent.toLocaleString("hun") }} Ft</td>
+                <td>{{ row.values.commute.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.income.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.bankBalance.toLocaleString("hun") }} Ft</td>
             </tr>
@@ -186,6 +188,7 @@ export default{
                 <th>Groceries</th>
                 <th>Extra</th>
                 <th>Rent</th>
+                <th>Commute</th>
                 <th>Income</th>
                 <th>Bank Balance</th>
             </tr>
@@ -194,6 +197,7 @@ export default{
                 <td>{{ row.values.groceries.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.extra.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.rent.toLocaleString("hun") }} Ft</td>
+                <td>{{ row.values.commute.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.income.toLocaleString("hun") }} Ft</td>
                 <td>{{ row.values.bankBalance.toLocaleString("hun") }} Ft</td>
             </tr>
