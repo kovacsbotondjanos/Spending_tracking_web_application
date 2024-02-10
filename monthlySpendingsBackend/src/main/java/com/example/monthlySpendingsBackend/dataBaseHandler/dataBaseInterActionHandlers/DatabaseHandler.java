@@ -20,7 +20,7 @@ public class DatabaseHandler {
         connectionProps.put("password", "ASD123");
         connectionProps.put("serverTimezone", "UTC");
         connectionProps.put("sessionTimezone", "UTC");
-        String dbURL = "jdbc:mysql://localhost:3306/monthly_spendings";
+        String dbURL = "jdbc:mysql://192.168.56.1:3306/monthly_spendings";
         connection = DriverManager.getConnection(dbURL, connectionProps);
 
         String insertQuery = String.format("INSERT INTO %s (DATE, AMOUNT) VALUES (?, ?)", this.dbName);
