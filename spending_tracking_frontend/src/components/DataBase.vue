@@ -12,6 +12,7 @@ export default{
         formDataForFill: {
             month: "",
         },
+        localhost: "192.168.56.1",
         };
     },
     methods: {
@@ -43,7 +44,7 @@ export default{
                     dataBaseName: this.formData.type,
                     amount: this.formData.amount,
                 };
-                fetch("http://localhost:8080/enterIntoDataBase/v1", {
+                fetch("http://" + this.localhost + ":8080/enterIntoDataBase/v1", {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
@@ -69,7 +70,7 @@ export default{
                     dataBaseName: this.formData.type,
                     amount: this.formData.amount,
                 };
-                fetch("http://localhost:8080/deleteFromDataBase/v1", {
+                fetch("http://" + this.localhost + ":8080/deleteFromDataBase/v1", {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json",
@@ -94,7 +95,7 @@ export default{
                 year = datas[0];
                 month = datas[1];
             }
-            fetch("http://localhost:8080/monthlyStatistics/v1/" + year + "/" + month, {
+            fetch("http://" + this.localhost + ":8080/monthlyStatistics/v1/" + year + "/" + month, {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
