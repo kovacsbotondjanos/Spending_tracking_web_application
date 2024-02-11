@@ -36,15 +36,15 @@ public class BankBalanceHandler extends DatabaseHandler{
         LocalDate localDate = LocalDate.of(year, month, day);
         selectStatementForUpdate.setObject(1, localDate);
         ResultSet results = selectStatementForUpdate.executeQuery();
-        results.next();
-        if(results.getDate("DATE").toLocalDate().equals(localDate)){
+        if(results.next() && results.getDate("DATE").toLocalDate().equals(localDate)){
             updateStatement.setObject(2, localDate);
             updateStatement.setInt(1, results.getInt("AMOUNT") + diff);
             updateStatement.executeUpdate();
         }
         else{
+            int amount = getBankBalanceByGivenDay(year, month, day);
             insertStatement.setObject(1, localDate);
-            insertStatement.setInt(2, results.getInt("AMOUNT") + diff);
+            insertStatement.setInt(2, amount + diff);
             insertStatement.executeUpdate();
         }
         while(results.next()){
