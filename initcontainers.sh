@@ -2,6 +2,7 @@
 
 docker stop monthlyspendings_frontend monthlyspendings_backend
 docker rm monthlyspendings_backend monthlyspendings_frontend
+docker image rm monthlyspendings_frontend monthlyspendings_backend
 
 cd monthlySpendingsBackend/
 docker build --build-arg JAR_FILE=target/*.jar -t monthlyspendings_backend .
