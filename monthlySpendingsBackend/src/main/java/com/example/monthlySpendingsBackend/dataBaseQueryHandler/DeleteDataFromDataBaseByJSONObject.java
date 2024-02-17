@@ -4,15 +4,12 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordReprese
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers.DataBaseWriteAndDeleteHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
 public class DeleteDataFromDataBaseByJSONObject {
-    @PostMapping("/deleteFromDataBase/v1")
+    @DeleteMapping("/deleteFromDataBase/v1")
     ResponseEntity<String> insertIntoDataBase(@RequestBody InteractionRecord dbDelete){
         try{
             DataBaseWriteAndDeleteHandler.DeleteFromDataBase(dbDelete);

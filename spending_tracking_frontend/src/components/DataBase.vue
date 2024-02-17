@@ -71,7 +71,7 @@ export default{
                     amount: this.formData.amount,
                 };
                 fetch("http://" + this.localhost + ":8080/deleteFromDataBase/v1", {
-                    method: 'POST',
+                    method: 'DELETE',
                     headers: {
                         "Content-Type": "application/json",
                     },
