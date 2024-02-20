@@ -68,10 +68,11 @@ public class DatabaseHandler {
     }
 
     public void deleteFromDataBaseByGivenDayAndAmount(int year, int month, int day, int amount) throws SQLException{
+        //TODO: when deleting a field "extra" sometimes it can cause strange behaviour. I will have to fix that in the future
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         LocalDate localDate = LocalDate.of(year, month, day);
         deleteStatement.setObject(1, localDate);
-        deleteStatement.setObject(2, amount);
+        deleteStatement.setInt(2, amount);
         deleteStatement.executeUpdate();
 
         BankBalanceHandler bankBalanceHandler = new BankBalanceHandler();
