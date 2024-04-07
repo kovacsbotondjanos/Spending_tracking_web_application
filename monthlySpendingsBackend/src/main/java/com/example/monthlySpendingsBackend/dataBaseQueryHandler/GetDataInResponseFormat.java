@@ -2,6 +2,8 @@ package com.example.monthlySpendingsBackend.dataBaseQueryHandler;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.DailyStatisticRecord;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers.DataBaseReadHandler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DateTimeException;
@@ -13,15 +15,18 @@ public class GetDataInResponseFormat {
 
     @GetMapping("/monthlyStatistics/v1/{year}/{month}")
     @ResponseBody()
-    public Map<Integer, DailyStatisticRecord> getDailyStatistics(@PathVariable String year, @PathVariable String month) throws Exception {
+    public ResponseEntity<?> getDailyStatistics(@PathVariable String year, @PathVariable String month) throws Exception {
         try{
-            return DataBaseReadHandler.DataBaseRead(year, month);
+            return ResponseEntity.ok(DataBaseReadHandler.DataBaseRead(year, month));
         }
-        //TODO: exception handling
         catch(DateTimeException de){
-            throw new Exception();
-        }catch(NumberFormatException ne){
-            throw new Exception();
+            return new ResponseEntity<>("Sorry, couldn't parse this date", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(NumberFormatException ne){
+            return new ResponseEntity<>("Sorry, couldn't parse this number", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception ne){
+            return new ResponseEntity<>("Sorry, something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

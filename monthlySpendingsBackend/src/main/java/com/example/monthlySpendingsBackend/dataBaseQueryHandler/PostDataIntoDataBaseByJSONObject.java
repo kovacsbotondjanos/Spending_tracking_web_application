@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
+
 @CrossOrigin
 @RestController
 public class PostDataIntoDataBaseByJSONObject {
@@ -18,8 +20,11 @@ public class PostDataIntoDataBaseByJSONObject {
             DataBaseWriteAndDeleteHandler.InsertIntoDataBase(dbWrite);
             return new ResponseEntity<>("Successfully inserted data into the database", HttpStatus.OK);
         }
-        catch(Exception e){
+        catch(SQLException e){
             return new ResponseEntity<>("Couldn't enter new data into the database", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>("Sorry, something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

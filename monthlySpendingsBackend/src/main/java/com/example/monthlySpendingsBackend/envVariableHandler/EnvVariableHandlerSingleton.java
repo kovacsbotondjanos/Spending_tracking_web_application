@@ -13,12 +13,6 @@ public class EnvVariableHandlerSingleton {
         dataBaseURL = System.getenv("DATABASEURL");
     }
 
-    private static void initEnvVariableHandlerSingletonInstance(){
-        if(envVars == null){
-            envVars = new EnvVariableHandlerSingleton();
-        }
-    }
-
     public static String getTimeZone() {
         if(envVars == null){
             initEnvVariableHandlerSingletonInstance();
@@ -45,5 +39,11 @@ public class EnvVariableHandlerSingleton {
             initEnvVariableHandlerSingletonInstance();
         }
         return envVars.dataBaseURL;
+    }
+
+    private static void initEnvVariableHandlerSingletonInstance(){
+        if(envVars == null){
+            envVars = new EnvVariableHandlerSingleton();
+        }
     }
 }

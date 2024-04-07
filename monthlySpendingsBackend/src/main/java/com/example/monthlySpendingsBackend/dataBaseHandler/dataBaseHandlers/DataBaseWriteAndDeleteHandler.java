@@ -13,11 +13,11 @@ public class DataBaseWriteAndDeleteHandler {
     private final int day;
     private final int amount;
 
-    public static void DeleteFromDataBase(InteractionRecord dbDelete){
+    public static void DeleteFromDataBase(InteractionRecord dbDelete) throws SQLException{
         (new DataBaseWriteAndDeleteHandler(dbDelete)).interactWithDataBase(Event.DELETE);
     }
 
-    public static void InsertIntoDataBase(InteractionRecord dbWrite){
+    public static void InsertIntoDataBase(InteractionRecord dbWrite) throws SQLException{
         (new DataBaseWriteAndDeleteHandler(dbWrite)).interactWithDataBase(Event.INSERT);
     }
 
@@ -30,20 +30,12 @@ public class DataBaseWriteAndDeleteHandler {
         amount = dbr.amount();
     }
 
-    private void interactWithDataBase(Event dataBaseInterActionEvent){
-        try{
-            switch(dataBaseInterActionEvent){
-                case INSERT -> (new DatabaseHandler(dataBaseName)).insertIntoDataBaseByGivenDay(
-                        year, month, day, amount);
-                case DELETE -> (new DatabaseHandler(dataBaseName)).deleteFromDataBaseByGivenDayAndAmount(
-                        year, month, day, amount);
-            }
-        }
-        catch(SQLException e){
-            System.err.printf(e.getMessage());
-        }
-        catch(Exception e){
-            System.err.printf(e.getMessage());
+    private void interactWithDataBase(Event dataBaseInterActionEvent) throws SQLException{
+        switch(dataBaseInterActionEvent){
+            case INSERT -> (new DatabaseHandler(dataBaseName)).insertIntoDataBaseByGivenDay(
+                    year, month, day, amount);
+            case DELETE -> (new DatabaseHandler(dataBaseName)).deleteFromDataBaseByGivenDayAndAmount(
+                    year, month, day, amount);
         }
     }
 }
