@@ -1,5 +1,7 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers;
 
+import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
+
 import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -16,11 +18,11 @@ public class DatabaseHandler {
     public DatabaseHandler(String dbName) throws SQLException {
         this.dbName = dbName;
         Properties connectionProps = new Properties();
-        connectionProps.put("user", "root");
-        connectionProps.put("password", "ASD123");
-        connectionProps.put("serverTimezone", "UTC");
-        connectionProps.put("sessionTimezone", "UTC");
-        String dbURL = "jdbc:mysql://192.168.56.1:3306/monthly_spendings";
+        connectionProps.put("user", EnvVariableHandlerSingleton.getUsername());
+        connectionProps.put("password", EnvVariableHandlerSingleton.getPassword());
+        connectionProps.put("serverTimezone", EnvVariableHandlerSingleton.getTimeZone());
+        connectionProps.put("sessionTimezone", EnvVariableHandlerSingleton.getTimeZone());
+        String dbURL = EnvVariableHandlerSingleton.getDataBaseURL();
         connection = DriverManager.getConnection(dbURL, connectionProps);
 
         String insertQuery = String.format("INSERT INTO %s (DATE, AMOUNT) VALUES (?, ?)", this.dbName);
@@ -52,7 +54,7 @@ public class DatabaseHandler {
     }
 
     public void insertIntoDataBaseByGivenDay(int year, int month, int day, int amount) throws SQLException{
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone(EnvVariableHandlerSingleton.getTimeZone()));
         LocalDate localDate = LocalDate.of(year, month, day);
         insertStatement.setObject(1, localDate);
         insertStatement.setInt(2, amount);
@@ -68,8 +70,7 @@ public class DatabaseHandler {
     }
 
     public void deleteFromDataBaseByGivenDayAndAmount(int year, int month, int day, int amount) throws SQLException{
-        //TODO: when deleting a field "extra" sometimes it can cause strange behaviour. I will have to fix that in the future
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone(EnvVariableHandlerSingleton.getTimeZone()));
         LocalDate localDate = LocalDate.of(year, month, day);
         deleteStatement.setObject(1, localDate);
         deleteStatement.setInt(2, amount);

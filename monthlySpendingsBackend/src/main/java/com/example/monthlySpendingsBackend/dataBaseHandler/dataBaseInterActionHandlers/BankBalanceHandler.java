@@ -1,5 +1,7 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers;
 
+import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +24,7 @@ public class BankBalanceHandler extends DatabaseHandler{
     }
 
     public int getBankBalanceByGivenDay(int year, int month, int day) throws SQLException {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone(EnvVariableHandlerSingleton.getTimeZone()));
         LocalDate localDate = LocalDate.of(year, month, day);
         selectStatement.setObject(1, localDate);
         ResultSet results = selectStatement.executeQuery();
@@ -32,7 +34,7 @@ public class BankBalanceHandler extends DatabaseHandler{
         return results.getInt("AMOUNT");
     }
     public void updateBankBalanceByGivenDay(int year, int month, int day, int diff) throws SQLException {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone(EnvVariableHandlerSingleton.getTimeZone()));
         LocalDate localDate = LocalDate.of(year, month, day);
         selectStatementForUpdate.setObject(1, localDate);
         ResultSet results = selectStatementForUpdate.executeQuery();
