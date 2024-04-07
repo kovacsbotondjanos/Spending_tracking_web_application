@@ -1,0 +1,15 @@
+<Configuration status="debug" name="spendingTracking" packages="">
+    <Appenders>
+        <Console name="fout" fileName="logs.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+        </Console>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="fout"/>
+        </Root>
+    </Loggers>
+</Configuration>
