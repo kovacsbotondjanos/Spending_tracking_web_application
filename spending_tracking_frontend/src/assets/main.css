@@ -1,9 +1,14 @@
-@import './base.css';
+@import "./base.css";
 
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&display=swap");
+
+html {
+  background-color: #181818;
+  color: white;
+}
 
 #app {
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: "Josefin Sans", sans-serif;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -20,7 +25,7 @@ a,
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    background-color: hsl(0, 0%, 100%);
   }
 }
 
@@ -37,39 +42,41 @@ a,
   }
 }
 
-.left{
+.left {
   position: absolute;
   top: 10px;
   left: 10px;
 }
 
-button{
+button {
   padding: 10px 20px;
-  border-radius: 50px; 
-  font-size: 16px; 
+  border-radius: 50px;
+  font-size: 16px;
 }
 
 button:hover {
   cursor: pointer;
 }
 
-table{
+table {
   border-collapse: collapse;
   text-align: center;
-  margin: 5px;  
+  margin: 5px;
 }
 
-td, tr, th{
+td,
+tr,
+th {
   border: 1px solid white;
   padding: 8px;
   color: white;
 }
 
-th{
+th {
   font-weight: bold;
 }
 
-.form{
+.form {
   position: absolute;
   top: 50px;
   left: 10px;
@@ -83,7 +90,8 @@ th{
   margin-right: 20px;
 }
 
-.days th, .days td {
+.days th,
+.days td {
   border: 1px solid #ccc;
   padding: 8px;
   text-align: left;
@@ -101,10 +109,50 @@ th{
   text-overflow: ellipsis;
 }
 
-.fillButton{
+.fillButton {
   margin-left: 10px;
 }
 
-.row{
+.row {
   margin-bottom: 10px;
+}
+
+a:hover {
+  color: black !important;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #000000;
+  color: white;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0);
+  z-index: 1000;
+}
+
+div.login-button {
+  padding: 10px;
+}
+
+.button-label {
+  position: center;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: auto;
+  padding: auto;
+}
+
+span {
+  margin-right: 10px;
+}
+input {
+  margin-right: 5px;
 }

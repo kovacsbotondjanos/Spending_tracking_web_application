@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM --platform=linux/arm64 node:lts-alpine
 RUN npm install -g http-server
 WORKDIR /app
 COPY package*.json ./
