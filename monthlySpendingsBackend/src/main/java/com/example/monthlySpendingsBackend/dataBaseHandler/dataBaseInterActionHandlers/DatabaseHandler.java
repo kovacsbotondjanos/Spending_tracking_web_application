@@ -61,7 +61,7 @@ public class DatabaseHandler {
         insertStatement.executeUpdate();
 
         BankBalanceHandler bankBalanceHandler = new BankBalanceHandler();
-        if(dbName.equals("income")){
+        if(dbName.equals("INCOME")){
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, amount);
         }
         else{
@@ -74,10 +74,13 @@ public class DatabaseHandler {
         LocalDate localDate = LocalDate.of(year, month, day);
         deleteStatement.setObject(1, localDate);
         deleteStatement.setInt(2, amount);
-        deleteStatement.executeUpdate();
-
+        int rowNum = deleteStatement.executeUpdate();
+        if(rowNum == 0){
+            //TODO: handle this case with a message to the frontend
+            return;
+        }
         BankBalanceHandler bankBalanceHandler = new BankBalanceHandler();
-        if(dbName.equals("income")){
+        if(dbName.equals("INCOME")){
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, -amount);
         }
         else{
