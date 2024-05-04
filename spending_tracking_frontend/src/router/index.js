@@ -15,6 +15,11 @@ const router = createRouter({
       name: 'home',
       component: MainView
     },
+    {
+      path: '/',
+      name: 'home',
+      component: MainView
+    },
     
   ]
 })

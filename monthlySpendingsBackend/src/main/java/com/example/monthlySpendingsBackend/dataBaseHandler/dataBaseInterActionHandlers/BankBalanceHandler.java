@@ -2,6 +2,7 @@ package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionH
 
 import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,8 +14,8 @@ public class BankBalanceHandler extends DatabaseHandler{
     private final PreparedStatement selectStatementForUpdate;
     private final PreparedStatement updateStatement;
 
-    public BankBalanceHandler() throws SQLException {
-        super("BANKBALANCE");
+    public BankBalanceHandler(Connection connection) throws SQLException {
+        super("BANKBALANCE", connection);
         String selectQuery = String.format("SELECT * FROM %s WHERE DATE<=? ORDER BY DATE DESC", this.dbName);
         this.selectStatement = connection.prepareStatement(selectQuery);
         String selectQueryForUpdate = String.format("SELECT * FROM %s WHERE DATE>=? ORDER BY DATE ASC", this.dbName);

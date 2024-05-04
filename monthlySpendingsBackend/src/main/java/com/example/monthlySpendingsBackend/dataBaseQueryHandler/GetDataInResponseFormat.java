@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.time.DateTimeException;
 
 @CrossOrigin
@@ -21,15 +22,19 @@ public class GetDataInResponseFormat {
         }
         catch(DateTimeException e){
             logger.debug(e.getMessage());
-            return new ResponseEntity<>("Sorry, couldn't parse this date", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Sorry, couldn't parse this date: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        catch(SQLException e){
+            logger.debug(e.getMessage());
+            return new ResponseEntity<>("Sorry, something went wrong while connecting to the database: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch(NumberFormatException e){
             logger.debug(e.getMessage());
-            return new ResponseEntity<>("Sorry, couldn't parse this number", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Sorry, couldn't parse this number: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         catch(Exception e){
             logger.debug(e.getMessage());
-            return new ResponseEntity<>("Sorry, something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Sorry, something went wrong: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

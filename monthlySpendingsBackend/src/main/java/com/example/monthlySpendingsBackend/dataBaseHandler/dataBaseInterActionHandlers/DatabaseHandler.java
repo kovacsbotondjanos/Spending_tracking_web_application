@@ -15,15 +15,9 @@ public class DatabaseHandler {
     protected final Connection connection;
     protected final String dbName;
 
-    public DatabaseHandler(String dbName) throws SQLException {
+    public DatabaseHandler(String dbName, Connection connection) throws SQLException {
         this.dbName = dbName;
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", EnvVariableHandlerSingleton.getUsername());
-        connectionProps.put("password", EnvVariableHandlerSingleton.getPassword());
-        connectionProps.put("serverTimezone", EnvVariableHandlerSingleton.getTimeZone());
-        connectionProps.put("sessionTimezone", EnvVariableHandlerSingleton.getTimeZone());
-        String dbURL = EnvVariableHandlerSingleton.getDataBaseURL();
-        connection = DriverManager.getConnection(dbURL, connectionProps);
+        this.connection = connection;
 
         String insertQuery = String.format("INSERT INTO %s (DATE, AMOUNT) VALUES (?, ?)", this.dbName);
         insertStatement = connection.prepareStatement(insertQuery);
@@ -60,7 +54,7 @@ public class DatabaseHandler {
         insertStatement.setInt(2, amount);
         insertStatement.executeUpdate();
 
-        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler();
+        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler(connection);
         if(dbName.equals("INCOME")){
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, amount);
         }
@@ -79,7 +73,7 @@ public class DatabaseHandler {
             //TODO: handle this case with a message to the frontend
             return;
         }
-        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler();
+        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler(connection);
         if(dbName.equals("INCOME")){
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, -amount);
         }

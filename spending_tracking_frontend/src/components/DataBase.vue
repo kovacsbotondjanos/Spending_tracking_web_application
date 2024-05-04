@@ -46,6 +46,7 @@ export default {
                     dataBaseName: this.formData.type,
                     amount: this.formData.amount,
                 };
+                console.log(data);
                 fetch("http://" + this.localhost + ":8080/enterIntoDataBase/v1", {
                     method: 'POST',
                     headers: {
@@ -55,6 +56,7 @@ export default {
                 })
                     .then(() => this.fillDays(this.today.getFullYear(), this.today.getMonth() + 1))
                     .catch((error) => {
+                        console.log(error);
                         console.error("Error:", error);
                     });
             }
@@ -138,7 +140,7 @@ export default {
 
 
 <template>
-    <nav class="navbar navbar-expand-lg bg-transparent">
+    <nav class="navbar navbar-expand-lg bg-transparent  sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -153,7 +155,7 @@ export default {
             </div>
         </div>
     </nav>
-    <div class="container container-fluid">
+    <div class="container container-fluid" style="padding-top: 70px;">
         <div class="row">
 
         </div>
@@ -164,11 +166,11 @@ export default {
                         <div class="col">
                             <label for="type">Type of the expense:</label><br>
                             <select v-model="this.formData.type" id="type">
-                                <option value="groceries" default>groceries</option>
-                                <option value="commute">commute</option>
-                                <option value="extra">extra</option>
-                                <option value="rent">rent</option>
-                                <option value="income">income</option>
+                                <option value="GROCERIES" default>GROCERIES</option>
+                                <option value="COMMUTE">COMMUTE</option>
+                                <option value="EXTRA">EXTRA</option>
+                                <option value="RENT">RENT</option>
+                                <option value="INCOME">INCOME</option>
                             </select>
                         </div>
                     </div>

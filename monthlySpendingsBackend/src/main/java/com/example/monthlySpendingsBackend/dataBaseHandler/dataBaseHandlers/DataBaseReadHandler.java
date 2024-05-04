@@ -3,8 +3,11 @@ package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.BankBalanceHandler;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.DatabaseHandler;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.DailyStatisticRecord;
+import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
 
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -21,14 +24,24 @@ public class DataBaseReadHandler{
     private Map<Date, List<Integer>> rent;
     private Map<Date, List<Integer>> income;
     private final int lastDay;
+    private final Connection connection;
 
-    public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month){
+    public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month) throws SQLException {
         return (new DataBaseReadHandler(year, month)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
     }
 
-    private DataBaseReadHandler(String year, String month) throws DateTimeException, NumberFormatException{
+    private DataBaseReadHandler(String year, String month) throws DateTimeException, NumberFormatException, SQLException{
         this.year = Integer.parseInt(year);
         this.month = Integer.parseInt(month);
+
+        Properties connectionProps = new Properties();
+        connectionProps.put("user", EnvVariableHandlerSingleton.getUsername());
+        connectionProps.put("password", EnvVariableHandlerSingleton.getPassword());
+        connectionProps.put("serverTimezone", EnvVariableHandlerSingleton.getTimeZone());
+        connectionProps.put("sessionTimezone", EnvVariableHandlerSingleton.getTimeZone());
+        String dbURL = EnvVariableHandlerSingleton.getDataBaseURL();
+        connection = DriverManager.getConnection(dbURL, connectionProps);
+
         lastDay = YearMonth.of(this.year, this.month).atEndOfMonth().getDayOfMonth();
         List<Thread> threadList = List.of(
                 new Thread(() -> this.groceries = dataBaseQueryByMonth("GROCERIES")),
@@ -83,7 +96,7 @@ public class DataBaseReadHandler{
     }
     private int getBankBalanceFromDataBase(int day){
         try {
-            return (new BankBalanceHandler()).getBankBalanceByGivenDay(year, month, day);
+            return (new BankBalanceHandler(connection)).getBankBalanceByGivenDay(year, month, day);
         }
         catch(SQLException e){
             System.err.println(e.getMessage());
@@ -106,7 +119,7 @@ public class DataBaseReadHandler{
 
     private Map<Date, List<Integer>> dataBaseQueryByMonth(String dbName){
         try{
-            return (new DatabaseHandler(dbName)).getExpensesByGivenMonth(year, month);
+            return (new DatabaseHandler(dbName, connection)).getExpensesByGivenMonth(year, month);
         }catch (SQLException e){
             System.err.println(e.getMessage());
             return (new HashMap<>());
