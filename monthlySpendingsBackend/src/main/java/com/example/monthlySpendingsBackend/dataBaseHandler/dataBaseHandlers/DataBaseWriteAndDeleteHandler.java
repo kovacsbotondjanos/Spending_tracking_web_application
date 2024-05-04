@@ -12,22 +12,24 @@ import java.util.Properties;
 
 public class DataBaseWriteAndDeleteHandler {
     private final String dataBaseName;
+    private final Long userId;
     private final int year;
     private final int month;
     private final int day;
     private final int amount;
     private final Connection connection;
 
-    public static void DeleteFromDataBase(InteractionRecord dbDelete) throws SQLException{
-        (new DataBaseWriteAndDeleteHandler(dbDelete)).interactWithDataBase(Event.DELETE);
+    public static void DeleteFromDataBase(InteractionRecord dbDelete, Long userId) throws SQLException, Exception{
+        (new DataBaseWriteAndDeleteHandler(dbDelete, userId)).interactWithDataBase(Event.DELETE);
     }
 
-    public static void InsertIntoDataBase(InteractionRecord dbWrite) throws SQLException{
-        (new DataBaseWriteAndDeleteHandler(dbWrite)).interactWithDataBase(Event.INSERT);
+    public static void InsertIntoDataBase(InteractionRecord dbWrite, Long userId) throws SQLException, Exception{
+        (new DataBaseWriteAndDeleteHandler(dbWrite, userId)).interactWithDataBase(Event.INSERT);
     }
 
-    private DataBaseWriteAndDeleteHandler(InteractionRecord dbr) throws SQLException{
+    private DataBaseWriteAndDeleteHandler(InteractionRecord dbr, Long userId) throws SQLException{
         //TODO: parse values and check for invalid data here
+        this.userId = userId;
 
         Properties connectionProps = new Properties();
         connectionProps.put("user", EnvVariableHandlerSingleton.getUsername());
@@ -44,11 +46,11 @@ public class DataBaseWriteAndDeleteHandler {
         amount = dbr.amount();
     }
 
-    private void interactWithDataBase(Event dataBaseInterActionEvent) throws SQLException{
+    private void interactWithDataBase(Event dataBaseInterActionEvent) throws SQLException, Exception{
         switch(dataBaseInterActionEvent){
-            case INSERT -> (new DatabaseHandler(dataBaseName, connection)).insertIntoDataBaseByGivenDay(
+            case INSERT -> (new DatabaseHandler(dataBaseName, connection, userId)).insertIntoDataBaseByGivenDay(
                     year, month, day, amount);
-            case DELETE -> (new DatabaseHandler(dataBaseName, connection)).deleteFromDataBaseByGivenDayAndAmount(
+            case DELETE -> (new DatabaseHandler(dataBaseName, connection, userId)).deleteFromDataBaseByGivenDayAndAmount(
                     year, month, day, amount);
         }
     }

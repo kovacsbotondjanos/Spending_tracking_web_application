@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 public class DataBaseReadHandler{
     private final int year;
     private final int month;
+    private final Long userId;
     private Map<Date, List<Integer>> groceries;
     private Map<Date, List<Integer>> commute;
     private Map<Date, List<Integer>> extra;
@@ -26,13 +27,14 @@ public class DataBaseReadHandler{
     private final int lastDay;
     private final Connection connection;
 
-    public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month) throws SQLException {
-        return (new DataBaseReadHandler(year, month)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
+    public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month, Long userId) throws SQLException {
+        return (new DataBaseReadHandler(year, month, userId)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
     }
 
-    private DataBaseReadHandler(String year, String month) throws DateTimeException, NumberFormatException, SQLException{
+    private DataBaseReadHandler(String year, String month, Long userId) throws DateTimeException, NumberFormatException, SQLException{
         this.year = Integer.parseInt(year);
         this.month = Integer.parseInt(month);
+        this.userId = userId;
 
         Properties connectionProps = new Properties();
         connectionProps.put("user", EnvVariableHandlerSingleton.getUsername());
@@ -96,7 +98,7 @@ public class DataBaseReadHandler{
     }
     private int getBankBalanceFromDataBase(int day){
         try {
-            return (new BankBalanceHandler(connection)).getBankBalanceByGivenDay(year, month, day);
+            return (new BankBalanceHandler(connection, userId)).getBankBalanceByGivenDay(year, month, day);
         }
         catch(SQLException e){
             System.err.println(e.getMessage());
@@ -119,10 +121,10 @@ public class DataBaseReadHandler{
 
     private Map<Date, List<Integer>> dataBaseQueryByMonth(String dbName){
         try{
-            return (new DatabaseHandler(dbName, connection)).getExpensesByGivenMonth(year, month);
+            return (new DatabaseHandler(dbName, connection, userId)).getExpensesByGivenMonth(year, month);
         }catch (SQLException e){
             System.err.println(e.getMessage());
-            return (new HashMap<>());
+            return new HashMap<>();
         }
     }
 }

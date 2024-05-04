@@ -14,13 +14,13 @@ public class BankBalanceHandler extends DatabaseHandler{
     private final PreparedStatement selectStatementForUpdate;
     private final PreparedStatement updateStatement;
 
-    public BankBalanceHandler(Connection connection) throws SQLException {
-        super("BANKBALANCE", connection);
-        String selectQuery = String.format("SELECT * FROM %s WHERE DATE<=? ORDER BY DATE DESC", this.dbName);
+    public BankBalanceHandler(Connection connection, Long userId) throws SQLException {
+        super("BANKBALANCE", connection, userId);
+        String selectQuery = String.format("SELECT * FROM %s WHERE DATE<=? AND USER_ID=%d ORDER BY DATE DESC", this.dbName, userId);
         this.selectStatement = connection.prepareStatement(selectQuery);
-        String selectQueryForUpdate = String.format("SELECT * FROM %s WHERE DATE>=? ORDER BY DATE ASC", this.dbName);
+        String selectQueryForUpdate = String.format("SELECT * FROM %s WHERE DATE>=? AND USER_ID=%d ORDER BY DATE ASC", this.dbName, userId);
         this.selectStatementForUpdate = connection.prepareStatement(selectQueryForUpdate);
-        String updateQuery = String.format("UPDATE %s SET AMOUNT=? WHERE DATE=?", this.dbName);
+        String updateQuery = String.format("UPDATE %s SET AMOUNT=? WHERE DATE=? AND USER_ID=%d", this.dbName, userId);
         this.updateStatement = connection.prepareStatement(updateQuery);
     }
 

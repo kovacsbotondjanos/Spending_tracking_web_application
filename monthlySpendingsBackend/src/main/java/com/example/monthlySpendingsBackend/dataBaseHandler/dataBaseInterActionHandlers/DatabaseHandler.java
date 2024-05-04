@@ -14,16 +14,18 @@ public class DatabaseHandler {
     private final PreparedStatement deleteStatement;
     protected final Connection connection;
     protected final String dbName;
+    protected final Long userId;
 
-    public DatabaseHandler(String dbName, Connection connection) throws SQLException {
+    public DatabaseHandler(String dbName, Connection connection, Long userId) throws SQLException {
         this.dbName = dbName;
         this.connection = connection;
+        this.userId = userId;
 
-        String insertQuery = String.format("INSERT INTO %s (DATE, AMOUNT) VALUES (?, ?)", this.dbName);
+        String insertQuery = String.format("INSERT INTO %s (DATE, AMOUNT, USER_ID) VALUES (?, ?, ?)", this.dbName);
         insertStatement = connection.prepareStatement(insertQuery);
-        String selectQueryInRange = String.format("SELECT * FROM %s WHERE YEAR(DATE)=? AND MONTH(DATE)=?", this.dbName);
+        String selectQueryInRange = String.format("SELECT * FROM %s WHERE YEAR(DATE)=? AND MONTH(DATE)=? AND USER_ID=%d", this.dbName, userId);
         selectStatementInRange = connection.prepareStatement(selectQueryInRange);
-        String deleteQuery = String.format("DELETE FROM %s WHERE DATE=? AND AMOUNT=?", this.dbName);
+        String deleteQuery = String.format("DELETE FROM %s WHERE DATE=? AND AMOUNT=? AND USER_ID=%d", this.dbName, userId);
         deleteStatement = connection.prepareStatement(deleteQuery);
     }
 
@@ -52,9 +54,10 @@ public class DatabaseHandler {
         LocalDate localDate = LocalDate.of(year, month, day);
         insertStatement.setObject(1, localDate);
         insertStatement.setInt(2, amount);
+        insertStatement.setLong(3, userId);
         insertStatement.executeUpdate();
 
-        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler(connection);
+        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler(connection, userId);
         if(dbName.equals("INCOME")){
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, amount);
         }
@@ -73,7 +76,8 @@ public class DatabaseHandler {
             //TODO: handle this case with a message to the frontend
             return;
         }
-        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler(connection);
+
+        BankBalanceHandler bankBalanceHandler = new BankBalanceHandler(connection, userId);
         if(dbName.equals("INCOME")){
             bankBalanceHandler.updateBankBalanceByGivenDay(year, month, day, -amount);
         }

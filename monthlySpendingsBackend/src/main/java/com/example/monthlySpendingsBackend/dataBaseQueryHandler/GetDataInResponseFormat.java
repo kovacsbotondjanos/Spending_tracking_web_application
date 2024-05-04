@@ -1,10 +1,15 @@
 package com.example.monthlySpendingsBackend.dataBaseQueryHandler;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers.DataBaseReadHandler;
+import com.example.monthlySpendingsBackend.models.user.CustomUserDetails;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -18,7 +23,13 @@ public class GetDataInResponseFormat {
     @ResponseBody()
     public ResponseEntity<?> getDailyStatistics(@PathVariable String year, @PathVariable String month){
         try{
-            return ResponseEntity.ok(DataBaseReadHandler.DataBaseRead(year, month));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+                return ResponseEntity.ok(DataBaseReadHandler.DataBaseRead(year, month, userDetails.id()));
+            }
+            else{
+                return new ResponseEntity<>("Unauthenticated", HttpStatus.UNAUTHORIZED);
+            }
         }
         catch(DateTimeException e){
             logger.debug(e.getMessage());
