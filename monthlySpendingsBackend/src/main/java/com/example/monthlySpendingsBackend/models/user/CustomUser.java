@@ -1,11 +1,9 @@
 package com.example.monthlySpendingsBackend.models.user;
 
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import java.util.Collection;
 
 @Entity
-@Table(name = "user")
+@Table(name = "USER")
 public class CustomUser{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
