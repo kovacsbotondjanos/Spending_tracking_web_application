@@ -24,12 +24,10 @@ public class DataBaseReadHandler {
     private Map<Date, List<Integer>> extra;
     private Map<Date, List<Integer>> rent;
     private Map<Date, List<Integer>> income;
-    private ApplicationContext context;
-    private Date start;
-    private Date end;
+    private final Date start;
+    private final Date end;
     List<BankBalance> bankBalances;
-    private BankBalanceService bankBalanceService;
-    private OutgoingService outgoingService;
+    private final OutgoingService outgoingService;
     private final int lastDay;
 
     public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month, Long userId) throws SQLException {
@@ -40,7 +38,6 @@ public class DataBaseReadHandler {
         this.year = Integer.parseInt(year);
         this.month = Integer.parseInt(month);
         this.userId = userId;
-        this.context = ApplicationContextProvider.getApplicationContext();
         this.lastDay = YearMonth.of(this.year, this.month).atEndOfMonth().getDayOfMonth();
 
         LocalDate startLoc = LocalDate.of(this.year, this.month, 1);
@@ -48,8 +45,9 @@ public class DataBaseReadHandler {
         LocalDate endLoc = LocalDate.of(this.year, this.month, lastDay);
         this.end = Date.from(endLoc.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
+        ApplicationContext context = ApplicationContextProvider.getApplicationContext();
         //bankBalances for the month
-        this.bankBalanceService = context.getBean(BankBalanceService.class);
+        BankBalanceService bankBalanceService = context.getBean(BankBalanceService.class);
         this.bankBalances = bankBalanceService.getBankBalanceExpenseByUserIdAndTypeBetweenDates(start, end, userId);
         //users
         this.outgoingService = context.getBean(OutgoingService.class);
@@ -72,7 +70,13 @@ public class DataBaseReadHandler {
 
     public Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
         Map<Integer, DailyStatisticRecord> dsList = new HashMap<>();
-        int bankBalance = 0;
+        int bankBalance;
+        if(!bankBalances.isEmpty()){
+            bankBalance = bankBalances.get(0).getAmount();
+        }
+        else{
+            bankBalance = 0;
+        }
         for(int i = 1; i <= lastDay; i++){
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
             LocalDate localDate = LocalDate.of(year, month, i);

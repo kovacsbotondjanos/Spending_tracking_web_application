@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.registration;
+package com.example.monthlySpendingsBackend.authHandlers;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserDetailService;

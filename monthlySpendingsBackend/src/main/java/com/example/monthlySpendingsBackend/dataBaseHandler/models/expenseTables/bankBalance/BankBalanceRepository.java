@@ -12,4 +12,6 @@ public interface BankBalanceRepository extends JpaRepository<BankBalance, Long> 
     List<BankBalance> findByDateGreaterThan(Date date);
     Optional<BankBalance> findByDate(Date date);
     List<BankBalance> findByDateBetweenAndUserId(Date startDate, Date endDate, Long userId);
+    BankBalance findFirstByOrderByDateDesc();
+    Optional<BankBalance> findFirstByDateLessThanOrderByDateDesc(Date date);
 }

@@ -4,6 +4,8 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUs
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,12 @@ public class BankBalanceService {
     }
 
     public List<BankBalance> getBankBalanceExpenseByUserIdAndTypeBetweenDates(Date startDate, Date endDate, Long userId){
-        return repository.findByDateBetweenAndUserId(startDate, endDate, userId);
+        Optional<BankBalance> lastDayBefore = repository.findFirstByDateLessThanOrderByDateDesc(startDate);
+        List<BankBalance> balances = new ArrayList<>();
+        lastDayBefore.ifPresent(balances::add);
+        balances.addAll(repository.findByDateBetweenAndUserId(startDate, endDate, userId));
+        return balances;
+
     }
 
     private Optional<BankBalance> getBankBalanceForSpecificDate(Date date){
