@@ -14,7 +14,7 @@ import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.IntStream;
-
+//TODO: all the methods from DatabaseHandler and BankBalanceHandler should be here
 public class DataBaseReadHandler {
     private final int year;
     private final int month;

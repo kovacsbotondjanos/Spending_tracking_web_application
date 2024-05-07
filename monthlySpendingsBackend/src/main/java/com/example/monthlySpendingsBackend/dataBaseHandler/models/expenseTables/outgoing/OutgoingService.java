@@ -12,10 +12,6 @@ public class OutgoingService {
     @Autowired
     private OutgoingRepository repository;
 
-    public List<Outgoing> getExpenseForUserId(Long userId){
-        return repository.findByUserId(userId);
-    }
-
     public List<Outgoing> getOutgoingExpenseByUserIdAndTypeBetweenDates(Date startDate, Date endDate, Long userId, String type){
         return repository.findByDateBetweenAndUserIdAndType(startDate, endDate, userId, type);
     }
@@ -27,5 +23,9 @@ public class OutgoingService {
         out.setUser(user);
         out.setType(type);
         return repository.save(out);
+    }
+
+    public void deleteExpenseRecord(Outgoing record){
+        repository.delete(record);
     }
 }

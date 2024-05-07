@@ -9,7 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-
+//TODO: all the methods from DatabaseHandler and BankBalanceHandler should be here
 public class DataBaseWriteAndDeleteHandler {
     private final String dataBaseName;
     private final Long userId;
