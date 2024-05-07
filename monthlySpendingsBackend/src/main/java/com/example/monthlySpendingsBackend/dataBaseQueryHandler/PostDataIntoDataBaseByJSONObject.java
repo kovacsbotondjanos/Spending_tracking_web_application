@@ -2,14 +2,12 @@ package com.example.monthlySpendingsBackend.dataBaseQueryHandler;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers.DataBaseWriteAndDeleteHandler;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.InteractionRecord;
-import com.example.monthlySpendingsBackend.models.user.CustomUser;
-import com.example.monthlySpendingsBackend.models.user.CustomUserDetails;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUserDetails;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
-import java.util.Currency;
 
 @CrossOrigin
 @RestController

@@ -1,6 +1,6 @@
-package com.example.monthlySpendingsBackend.models.expenseTables.bankBalance;
+package com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance;
 
-import com.example.monthlySpendingsBackend.models.user.CustomUser;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
 import jakarta.persistence.*;
 
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.models.user;
+package com.example.monthlySpendingsBackend.dataBaseHandler.models.users;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

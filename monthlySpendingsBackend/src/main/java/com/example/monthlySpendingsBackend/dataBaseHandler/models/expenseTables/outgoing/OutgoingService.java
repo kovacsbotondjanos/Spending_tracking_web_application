@@ -1,6 +1,6 @@
-package com.example.monthlySpendingsBackend.models.expenseTables.outgoing;
+package com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing;
 
-import com.example.monthlySpendingsBackend.models.user.CustomUser;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

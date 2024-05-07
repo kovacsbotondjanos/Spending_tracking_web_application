@@ -2,7 +2,10 @@ package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionH
 
 import com.example.monthlySpendingsBackend.contexts.ApplicationContextProvider;
 import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
-import com.example.monthlySpendingsBackend.models.expenseTables.outgoing.OutgoingService;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalanceService;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.OutgoingService;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserDetailService;
 import org.springframework.context.ApplicationContext;
 
 import java.sql.*;
@@ -42,6 +45,10 @@ public class DatabaseHandler {
 
         ApplicationContext context = ApplicationContextProvider.getApplicationContext();
         OutgoingService outgoingService = context.getBean(OutgoingService.class);
+        UserDetailService us = context.getBean(UserDetailService.class);
+        BankBalanceService bankBalanceService = context.getBean(BankBalanceService.class);
+        CustomUser user = us.getUserById(userId);
+        bankBalanceService.updateBankBalance(start, 0, user);
 
         var expenses = outgoingService.getOutgoingExpenseByUserIdAndTypeBetweenDates(start, end, userId, dbName);
         expenses.forEach(e -> {

@@ -1,6 +1,6 @@
 package com.example.monthlySpendingsBackend.auth.config;
 
-import com.example.monthlySpendingsBackend.models.user.UserDetailService;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

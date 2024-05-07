@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.models.user;
+package com.example.monthlySpendingsBackend.dataBaseHandler.models.users;
 
 import jakarta.persistence.*;
 

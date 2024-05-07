@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.models.user;
+package com.example.monthlySpendingsBackend.dataBaseHandler.models.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,6 +27,10 @@ public class UserDetailService implements UserDetailsService {
 
         user.setPassword(encoder.encode(user.getPassword()));
         return repository.save(user);
+    }
+
+    public CustomUser getUserById(Long id){
+        return repository.getById(id);
     }
 
     @Override

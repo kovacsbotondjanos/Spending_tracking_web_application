@@ -1,7 +1,7 @@
 package com.example.monthlySpendingsBackend.registration;
 
-import com.example.monthlySpendingsBackend.models.user.CustomUser;
-import com.example.monthlySpendingsBackend.models.user.UserDetailService;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

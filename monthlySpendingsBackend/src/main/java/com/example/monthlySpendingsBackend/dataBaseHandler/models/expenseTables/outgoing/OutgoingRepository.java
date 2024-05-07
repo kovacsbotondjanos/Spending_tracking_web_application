@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.models.expenseTables.outgoing;
+package com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

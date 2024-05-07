@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.models.expenseTables.bankBalance;
+package com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface BankBalanceRepository extends JpaRepository<BankBalance, Long> {
     List<BankBalance> findByUserId(Long userId);
     //TODO: when date is bigger then current one, find it, not like we do rn
+    List<BankBalance> findByDateGreaterThan(Date date);
     Optional<BankBalance> findByDate(Date date);
-    List<BankBalance> findByDateBetweenAndUserIdAndType(Date startDate, Date endDate, Long userId, String type);
+    List<BankBalance> findByDateBetweenAndUserId(Date startDate, Date endDate, Long userId);
 }
