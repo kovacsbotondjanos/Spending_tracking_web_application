@@ -1,20 +1,20 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers;
 
-import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.BankBalanceHandler;
-import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.DatabaseHandler;
+import com.example.monthlySpendingsBackend.contexts.ApplicationContextProvider;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.DailyStatisticRecord;
-import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalance;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalanceService;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.Outgoing;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.OutgoingService;
+import org.springframework.context.ApplicationContext;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.IntStream;
-//TODO: all the methods from DatabaseHandler and BankBalanceHandler should be here
+
 public class DataBaseReadHandler {
     private final int year;
     private final int month;
@@ -24,8 +24,13 @@ public class DataBaseReadHandler {
     private Map<Date, List<Integer>> extra;
     private Map<Date, List<Integer>> rent;
     private Map<Date, List<Integer>> income;
+    private ApplicationContext context;
+    private Date start;
+    private Date end;
+    List<BankBalance> bankBalances;
+    private BankBalanceService bankBalanceService;
+    private OutgoingService outgoingService;
     private final int lastDay;
-    private final Connection connection;
 
     public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month, Long userId) throws SQLException {
         return (new DataBaseReadHandler(year, month, userId)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
@@ -35,16 +40,19 @@ public class DataBaseReadHandler {
         this.year = Integer.parseInt(year);
         this.month = Integer.parseInt(month);
         this.userId = userId;
+        this.context = ApplicationContextProvider.getApplicationContext();
+        this.lastDay = YearMonth.of(this.year, this.month).atEndOfMonth().getDayOfMonth();
 
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", EnvVariableHandlerSingleton.getUsername());
-        connectionProps.put("password", EnvVariableHandlerSingleton.getPassword());
-        connectionProps.put("serverTimezone", EnvVariableHandlerSingleton.getTimeZone());
-        connectionProps.put("sessionTimezone", EnvVariableHandlerSingleton.getTimeZone());
-        String dbURL = EnvVariableHandlerSingleton.getDataBaseURL();
-        connection = DriverManager.getConnection(dbURL, connectionProps);
-        //TODO: use this lastDay var
-        lastDay = YearMonth.of(this.year, this.month).atEndOfMonth().getDayOfMonth();
+        LocalDate startLoc = LocalDate.of(this.year, this.month, 1);
+        this.start = Date.from(startLoc.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        LocalDate endLoc = LocalDate.of(this.year, this.month, lastDay);
+        this.end = Date.from(endLoc.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        //bankBalances for the month
+        this.bankBalanceService = context.getBean(BankBalanceService.class);
+        this.bankBalances = bankBalanceService.getBankBalanceExpenseByUserIdAndTypeBetweenDates(start, end, userId);
+        //users
+        this.outgoingService = context.getBean(OutgoingService.class);
         List<Thread> threadList = List.of(
                 new Thread(() -> this.groceries = dataBaseQueryByMonth("GROCERIES")),
                 new Thread(() -> this.commute = dataBaseQueryByMonth("COMMUTE")),
@@ -64,10 +72,17 @@ public class DataBaseReadHandler {
 
     public Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
         Map<Integer, DailyStatisticRecord> dsList = new HashMap<>();
-        IntStream.rangeClosed(1, lastDay).forEach(i -> {
+        int bankBalance = 0;
+        for(int i = 1; i <= lastDay; i++){
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
             LocalDate localDate = LocalDate.of(year, month, i);
             Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+            Optional<BankBalance> balanceOptional = bankBalances.stream().filter(bb -> date.equals(bb.getDate())).findFirst();
+            if(balanceOptional.isPresent()){
+                bankBalance = balanceOptional.get().getAmount();
+            }
+
             List<Integer> groceriesList = new ArrayList<>();
             int groceriesAmount = setGivenListAccordingToMapAndReturnWithSum(groceriesList, groceries, date);
             List<Integer> commuteList = new ArrayList<>();
@@ -89,22 +104,10 @@ public class DataBaseReadHandler {
                     rentList,
                     incomeAmount,
                     incomeList,
-                    getBankBalanceFromDataBase(i));
+                    bankBalance);
             dsList.put(i, dsr);
-        });
+        }
         return dsList;
-    }
-    private int getBankBalanceFromDataBase(int day){
-        try {
-            return (new BankBalanceHandler(connection, userId)).getBankBalanceByGivenDay(year, month, day);
-        }
-        catch(SQLException e){
-            System.err.println(e.getMessage());
-        }
-        catch(Exception e){
-            System.err.println(e.getMessage());
-        }
-        return 0;
     }
 
     private int setGivenListAccordingToMapAndReturnWithSum(List<Integer> actualList, Map<Date, List<Integer>> actualMap, Date date){
@@ -118,11 +121,23 @@ public class DataBaseReadHandler {
     }
 
     private Map<Date, List<Integer>> dataBaseQueryByMonth(String dbName){
-        try{
-            return (new DatabaseHandler(dbName, connection, userId)).getExpensesByGivenMonth(year, month);
-        }catch (SQLException e){
-            System.err.println(e.getMessage());
-            return new HashMap<>();
-        }
+        Map<Date, List<Integer>> dateToInt = new HashMap<>();
+
+
+        List<Outgoing> expenses = outgoingService.getOutgoingExpenseByUserIdAndTypeBetweenDates(start, end, userId, dbName);
+
+        expenses.forEach(e -> {
+            Date date = e.getDate();
+            int amount = e.getAmount();
+            if(dateToInt.containsKey(date)){
+                dateToInt.get(date).add(amount);
+            }
+            else{
+                List<Integer> initList = new ArrayList<>();
+                initList.add(amount);
+                dateToInt.put(date, initList);
+            }
+        });
+        return dateToInt;
     }
 }

@@ -25,7 +25,7 @@ public class RegistrationHandler {
             return new ResponseEntity<>("Successfully created user", HttpStatus.CREATED);
         }
         catch(IllegalArgumentException ie){
-            return new ResponseEntity<>("This username or email is already taken, " + ie.getMessage(), HttpStatus.CREATED);
+            return new ResponseEntity<>("This username or email is already taken, " + ie.getMessage(), HttpStatus.CONFLICT);
         }
     }
 }

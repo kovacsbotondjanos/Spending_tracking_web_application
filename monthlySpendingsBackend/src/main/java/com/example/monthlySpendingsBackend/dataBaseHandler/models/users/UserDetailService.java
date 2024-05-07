@@ -22,7 +22,7 @@ public class UserDetailService implements UserDetailsService {
             throw new IllegalArgumentException("Username already exists");
         }
         if(repository.findByEmail(user.getEmail()).isPresent()){
-            throw new IllegalArgumentException("Username already exists");
+            throw new IllegalArgumentException("Email already exists");
         }
 
         user.setPassword(encoder.encode(user.getPassword()));

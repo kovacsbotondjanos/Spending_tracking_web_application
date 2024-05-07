@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OutgoingService {
@@ -25,7 +26,11 @@ public class OutgoingService {
         return repository.save(out);
     }
 
-    public void deleteExpenseRecord(Outgoing record){
-        repository.delete(record);
+    public void deleteExpenseRecord(Date date, int amount, CustomUser user, String type) throws IllegalArgumentException {
+        Optional<Outgoing> optionalExpense = repository.findByDateAndUserIdAndAmountAndType(date, user.getId(), amount, type);
+        if(optionalExpense.isEmpty()){
+            throw new IllegalArgumentException("Please provide a record with existing data");
+        }
+        optionalExpense.ifPresent(repository::delete);
     }
 }

@@ -25,7 +25,7 @@ public class BankBalanceService {
         return repository.findByDate(date);
     }
 
-    public void updateBankBalance(Date date, int fluctuation, CustomUser user){
+    public void updateBankBalance(Date date, int fluctuation){
         //TODO: get the whole list of bank balances after the first day!
         Optional<BankBalance> balance = getBankBalanceForSpecificDate(date);
         List<BankBalance> balancesAfter = bankBalancesAfterCertainDate(date);

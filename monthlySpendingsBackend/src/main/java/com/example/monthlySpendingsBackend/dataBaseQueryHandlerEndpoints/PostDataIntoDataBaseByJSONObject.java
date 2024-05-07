@@ -32,10 +32,6 @@ public class PostDataIntoDataBaseByJSONObject {
                 return new ResponseEntity<>("Unauthenticated", HttpStatus.UNAUTHORIZED);
             }
         }
-        catch(SQLException e){
-            logger.debug(e.getMessage());
-            return new ResponseEntity<>("Couldn't enter new data into the database: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         catch(Exception e){
             logger.debug(e.getMessage());
             return new ResponseEntity<>("Sorry, something went wrong: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
