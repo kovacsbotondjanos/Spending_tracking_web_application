@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "BANKBALANCE")
-public class bankBalance {
+public class BankBalance {
     @Id
     @Temporal(TemporalType.DATE)
     private Date date;
@@ -17,4 +17,28 @@ public class bankBalance {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private CustomUser user;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public CustomUser getUser() {
+        return user;
+    }
+
+    public void setUser(CustomUser user) {
+        this.user = user;
+    }
 }

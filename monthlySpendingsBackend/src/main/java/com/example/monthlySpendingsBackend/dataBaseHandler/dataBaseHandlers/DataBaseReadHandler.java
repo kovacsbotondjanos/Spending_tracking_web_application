@@ -6,16 +6,16 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordReprese
 import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class DataBaseReadHandler{
+public class DataBaseReadHandler {
     private final int year;
     private final int month;
     private final Long userId;
@@ -43,7 +43,7 @@ public class DataBaseReadHandler{
         connectionProps.put("sessionTimezone", EnvVariableHandlerSingleton.getTimeZone());
         String dbURL = EnvVariableHandlerSingleton.getDataBaseURL();
         connection = DriverManager.getConnection(dbURL, connectionProps);
-
+        //TODO: use this lastDay var
         lastDay = YearMonth.of(this.year, this.month).atEndOfMonth().getDayOfMonth();
         List<Thread> threadList = List.of(
                 new Thread(() -> this.groceries = dataBaseQueryByMonth("GROCERIES")),
@@ -52,24 +52,22 @@ public class DataBaseReadHandler{
                 new Thread(() -> this.rent = dataBaseQueryByMonth("RENT")),
                 new Thread(() -> this.income = dataBaseQueryByMonth("INCOME"))
         );
-        for(Thread t : threadList){
-            t.start();
-        }
-        for(Thread t : threadList){
+        threadList.forEach(Thread::start);
+        threadList.forEach(thread -> {
             try {
-                t.join();
+                thread.join();
             } catch (InterruptedException e) {
                 System.err.println(e.getMessage());
             }
-        }
+        });
     }
 
-    private Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
+    public Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
         Map<Integer, DailyStatisticRecord> dsList = new HashMap<>();
         IntStream.rangeClosed(1, lastDay).forEach(i -> {
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
             LocalDate localDate = LocalDate.of(year, month, i);
-            Date date = Date.valueOf(localDate);
+            Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
             List<Integer> groceriesList = new ArrayList<>();
             int groceriesAmount = setGivenListAccordingToMapAndReturnWithSum(groceriesList, groceries, date);
             List<Integer> commuteList = new ArrayList<>();

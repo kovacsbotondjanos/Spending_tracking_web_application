@@ -1,16 +1,19 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers;
 
+import com.example.monthlySpendingsBackend.contexts.ApplicationContextProvider;
 import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
+import com.example.monthlySpendingsBackend.models.expenseTables.outgoing.OutgoingService;
+import org.springframework.context.ApplicationContext;
 
 import java.sql.*;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.Date;
 
 public class DatabaseHandler {
 
     protected final PreparedStatement insertStatement;
-    private final PreparedStatement selectStatementInRange;
     private final PreparedStatement deleteStatement;
     protected final Connection connection;
     protected final String dbName;
@@ -23,20 +26,27 @@ public class DatabaseHandler {
 
         String insertQuery = String.format("INSERT INTO %s (DATE, AMOUNT, USER_ID) VALUES (?, ?, ?)", this.dbName);
         insertStatement = connection.prepareStatement(insertQuery);
-        String selectQueryInRange = String.format("SELECT * FROM %s WHERE YEAR(DATE)=? AND MONTH(DATE)=? AND USER_ID=%d", this.dbName, userId);
-        selectStatementInRange = connection.prepareStatement(selectQueryInRange);
         String deleteQuery = String.format("DELETE FROM %s WHERE DATE=? AND AMOUNT=? AND USER_ID=%d", this.dbName, userId);
         deleteStatement = connection.prepareStatement(deleteQuery);
     }
 
     public Map<Date, List<Integer>> getExpensesByGivenMonth(int year, int month) throws SQLException{
         Map<Date, List<Integer>> expensesForGivenMonth = new HashMap<>();
-        selectStatementInRange.setInt(1, year);
-        selectStatementInRange.setInt(2, month);
-        ResultSet results = selectStatementInRange.executeQuery();
-        while(results.next()){
-            Date date = results.getDate(2);
-            int amount = results.getInt(3);
+
+        int lastDay = new org.joda.time.LocalDate(year, month, 1).dayOfMonth().withMaximumValue().getDayOfMonth();
+
+        LocalDate startLoc = LocalDate.of(year, month, 1);
+        Date start = Date.from(startLoc.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        LocalDate endLoc = LocalDate.of(year, month, lastDay);
+        Date end = Date.from(endLoc.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
+        ApplicationContext context = ApplicationContextProvider.getApplicationContext();
+        OutgoingService outgoingService = context.getBean(OutgoingService.class);
+
+        var expenses = outgoingService.getOutgoingExpenseByUserIdAndTypeBetweenDates(start, end, userId, dbName);
+        expenses.forEach(e -> {
+            Date date = e.getDate();
+            int amount = e.getAmount();
             if(expensesForGivenMonth.containsKey(date)){
                 expensesForGivenMonth.get(date).add(amount);
             }
@@ -45,7 +55,7 @@ public class DatabaseHandler {
                 initList.add(amount);
                 expensesForGivenMonth.put(date, initList);
             }
-        }
+        });
         return expensesForGivenMonth;
     }
 
@@ -73,7 +83,6 @@ public class DatabaseHandler {
         deleteStatement.setInt(2, amount);
         int rowNum = deleteStatement.executeUpdate();
         if(rowNum == 0){
-            //TODO: handle this case with a message to the frontend
             return;
         }
 
