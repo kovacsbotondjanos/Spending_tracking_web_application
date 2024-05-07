@@ -4,7 +4,6 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUs
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,46 +14,49 @@ public class BankBalanceService {
     @Autowired
     private BankBalanceRepository repository;
 
-    public List<BankBalance> getBankBalanceForUserId(Long userId){
-        return repository.findByUserId(userId);
-    }
-
+    //We return the bank balances of the time between the two dates, additionally we add the last record too
     public List<BankBalance> getBankBalanceExpenseByUserIdAndTypeBetweenDates(Date startDate, Date endDate, Long userId){
-        Optional<BankBalance> lastDayBefore = repository.findFirstByDateLessThanOrderByDateDesc(startDate);
+        Optional<BankBalance> lastDayBefore = repository.findFirstByDateAndUserIdLessThanOrderByDateDesc(startDate, userId);
         List<BankBalance> balances = new ArrayList<>();
         lastDayBefore.ifPresent(balances::add);
         balances.addAll(repository.findByDateBetweenAndUserId(startDate, endDate, userId));
         return balances;
 
     }
-
-    private Optional<BankBalance> getBankBalanceForSpecificDate(Date date){
-        return repository.findByDate(date);
+    //We have to update the one record of that day and all the records after that
+    public void updateBankBalance(Date date, int fluctuation, CustomUser user){
+        List<BankBalance> balances = repository.findByDateAndUserIdGreaterThanEqual(date, user.getId());
+        Optional<BankBalance> balanceOptional = repository.findByDateAndUserId(date, user.getId());
+        balanceOptional.ifPresentOrElse(
+                bankBalance -> balances.forEach(bb -> updateBankBalanceForSpecificDay(bb, fluctuation)),
+                () -> insertBankBalanceForSpecificDayAndUpdateDays(date, fluctuation, user, balances)
+        );
     }
 
-    public void updateBankBalance(Date date, int fluctuation){
-        //TODO: get the whole list of bank balances after the first day!
-        Optional<BankBalance> balance = getBankBalanceForSpecificDate(date);
-        List<BankBalance> balancesAfter = bankBalancesAfterCertainDate(date);
+    public void registerUserWithBalance(Date date, CustomUser user, int balance){
+        BankBalance bb = new BankBalance();
+        bb.setAmount(balance);
+        bb.setUser(user);
+        bb.setDate(date);
+        repository.save(bb);
     }
 
-    private List<BankBalance> bankBalancesAfterCertainDate(Date date){
-        return repository.findByDateGreaterThan(date);
-    }
-
-    private BankBalance insertBankBalanceForSpecificDay(Date date, int fluctuation, CustomUser user, List<BankBalance> balancesAfter){
+    private void insertBankBalanceForSpecificDayAndUpdateDays(Date date, int fluctuation, CustomUser user, List<BankBalance> balancesAfter){
         BankBalance bb = new BankBalance();
         bb.setDate(date);
-        //TODO: find the amount
-        //TODO: refresh all the balances in the list
+
+        Optional<BankBalance> balanceBefore = repository.findFirstByDateAndUserIdLessThanOrderByDateDesc(date, user.getId());
+        balanceBefore.ifPresentOrElse(
+                balance -> bb.setAmount(balance.getAmount() + fluctuation),
+                () -> bb.setAmount(fluctuation)
+        );
+
         bb.setUser(user);
-        return repository.save(bb);
+        repository.save(bb);
     }
 
-    private BankBalance updateBankBalanceForSpecificDay(BankBalance balance, int fluctuation, List<BankBalance> balancesAfter){
-        //TODO: refresh all the balances in the list
-        BankBalance bb = new BankBalance();
-        bb.setAmount(bb.getAmount() - fluctuation);
-        return repository.save(bb);
+    private void updateBankBalanceForSpecificDay(BankBalance balance, int fluctuation){
+        balance.setAmount(balance.getAmount() - fluctuation);
+        repository.save(balance);
     }
 }

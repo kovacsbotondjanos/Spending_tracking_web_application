@@ -30,9 +30,9 @@ public class OutgoingService {
         BankBalanceService bankBalanceService = context.getBean(BankBalanceService.class);
 
         if (type.equals("INCOME")) {
-            bankBalanceService.updateBankBalance(date, amount);
+            bankBalanceService.updateBankBalance(date, amount, user);
         } else {
-            bankBalanceService.updateBankBalance(date, -amount);
+            bankBalanceService.updateBankBalance(date, -amount, user);
         }
 
 
@@ -54,9 +54,9 @@ public class OutgoingService {
         BankBalanceService bankBalanceService = context.getBean(BankBalanceService.class);
 
         if (type.equals("INCOME")) {
-            bankBalanceService.updateBankBalance(date, -amount);
+            bankBalanceService.updateBankBalance(date, -amount, user);
         } else {
-            bankBalanceService.updateBankBalance(date, amount);
+            bankBalanceService.updateBankBalance(date, amount, user);
         }
 
         optionalExpense.ifPresent(repository::delete);

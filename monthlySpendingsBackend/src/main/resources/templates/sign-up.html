@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign up</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav  ms-auto">
+            <li class=" nav-item ms-2 ml-2">
+                <a class="btn bg-light" href="/register">Create an account</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="row h-100 align-items-center">
+    <div class="col-12  text-center">
+        <h2>Sign up</h2>
+        <form action="/register" method="post">
+            <div class="m-10">
+                <label for="name">Username:</label>
+                <br>
+                <input type="text" id="name" name="name" required>
+                <br>
+                <label for="email">E-mail:</label>
+                <br>
+                <input type="text" id="email" name="email" required>
+                <br>
+                <label for="password">Password:</label>
+                <br>
+                <input type="password" id="password" name="password" required>
+                <br>
+                <label for="bankBalance">Bank balance:</label>
+                <br>
+                <input type="number" id="bankBalance" name="bankBalance" required>
+            </div>
+            <br>
+            <div class="m-10">
+                <button class=" btn btn-dark" type="submit">Sign up</button>
+            </div>
+            <br>
+        </form>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</html>

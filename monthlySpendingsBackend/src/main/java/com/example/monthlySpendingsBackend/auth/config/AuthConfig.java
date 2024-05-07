@@ -29,10 +29,14 @@ public class AuthConfig  {
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers("/register").permitAll();
                     registry.requestMatchers("/deleteFromDataBase/v1", "/monthlyStatistics/v1/**", "/enterIntoDataBase/v1").authenticated();
-                    registry.anyRequest().permitAll();
+                    registry.anyRequest().authenticated();
                 })
-                .formLogin()
-                .and()
+                .formLogin(httpSecurityFormLoginConfigurer -> {
+                    httpSecurityFormLoginConfigurer
+                            .loginPage("/login")
+                            .successHandler(new AuthSuccessHandler()).
+                            permitAll();
+                })
                 .logout(LogoutConfigurer::permitAll)
                 .build();
     }
