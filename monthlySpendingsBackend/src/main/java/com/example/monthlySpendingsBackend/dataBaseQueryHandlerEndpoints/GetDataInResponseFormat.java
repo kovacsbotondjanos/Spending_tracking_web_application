@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.dataBaseQueryHandler;
+package com.example.monthlySpendingsBackend.dataBaseQueryHandlerEndpoints;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers.DataBaseReadHandler;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUserDetails;
