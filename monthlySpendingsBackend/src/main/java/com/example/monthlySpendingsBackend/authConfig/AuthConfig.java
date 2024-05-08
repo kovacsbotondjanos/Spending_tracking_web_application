@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.auth.config;
+package com.example.monthlySpendingsBackend.authConfig;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +27,14 @@ public class AuthConfig  {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/register").permitAll();
+                    registry.requestMatchers("/register", "/main.css").permitAll();
                     registry.requestMatchers("/deleteFromDataBase/v1", "/monthlyStatistics/v1/**", "/enterIntoDataBase/v1").authenticated();
                     registry.anyRequest().authenticated();
                 })
-                .formLogin(httpSecurityFormLoginConfigurer -> {
-                    httpSecurityFormLoginConfigurer
-                            .loginPage("/login")
-                            .successHandler(new AuthSuccessHandler()).
-                            permitAll();
-                })
+                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer
+                        .loginPage("/login")
+                        .successHandler(new AuthSuccessHandler()).
+                        permitAll())
                 .logout(LogoutConfigurer::permitAll)
                 .build();
     }

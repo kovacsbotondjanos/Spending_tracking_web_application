@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.authHandlers;
+package com.example.monthlySpendingsBackend.endpoints.authHandlerEndpoints;
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalanceService;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
@@ -39,7 +39,6 @@ public class RegistrationHandler {
             user.setUsername(userDetails.getName());
             user.setRole("USER");
             userService.registerUser(user);
-            System.out.println(user.toString());
             bankBalanceService.registerUserWithBalance(date, user, userDetails.getBankBalance());
             return new ResponseEntity<>("Successfully created user", HttpStatus.CREATED);
         }

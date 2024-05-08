@@ -9,7 +9,6 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserDeta
 import org.springframework.context.ApplicationContext;
 
 import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -32,12 +31,8 @@ public class DataBaseWriteAndDeleteHandler {
         this.dataBaseName = dbr.dataBaseName();
         this.amount = dbr.amount();
 
-        int year = Integer.parseInt(dbr.year());
-        int month = Integer.parseInt(dbr.month());
-        int day = Integer.parseInt(dbr.day());
-
-        LocalDate localDate = LocalDate.of(year, month, day);
-        this.date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        this.date = Date.from(dbr.date().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        System.out.println(date);
 
         ApplicationContext context = ApplicationContextProvider.getApplicationContext();
         //outgoing service

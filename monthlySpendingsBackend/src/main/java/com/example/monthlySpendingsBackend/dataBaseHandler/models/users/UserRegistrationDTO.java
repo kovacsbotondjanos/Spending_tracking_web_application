@@ -1,5 +1,6 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.models.users;
 
+//TODO: make this a record instead
 public class UserRegistrationDTO {
     String name;
     String email;

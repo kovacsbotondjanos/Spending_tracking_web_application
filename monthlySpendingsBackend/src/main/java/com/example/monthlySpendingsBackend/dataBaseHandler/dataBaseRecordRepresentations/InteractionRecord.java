@@ -1,8 +1,8 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations;
 
+import java.time.LocalDate;
+
 public record InteractionRecord(
-        String year,
-        String month,
-        String day,
+        LocalDate date,
         String dataBaseName,
         int amount) { }

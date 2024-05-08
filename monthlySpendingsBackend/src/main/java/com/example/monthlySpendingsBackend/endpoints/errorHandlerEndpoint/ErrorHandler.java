@@ -1,4 +1,4 @@
-package com.example.monthlySpendingsBackend.errorHandler;
+package com.example.monthlySpendingsBackend.endpoints.errorHandlerEndpoint;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -34,7 +34,7 @@ public class DataBaseReadHandler {
         return (new DataBaseReadHandler(year, month, userId)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
     }
 
-    private DataBaseReadHandler(String year, String month, Long userId) throws DateTimeException, NumberFormatException, SQLException{
+    private DataBaseReadHandler(String year, String month, Long userId) throws DateTimeException, NumberFormatException{
         this.year = Integer.parseInt(year);
         this.month = Integer.parseInt(month);
         this.userId = userId;
@@ -48,7 +48,7 @@ public class DataBaseReadHandler {
         ApplicationContext context = ApplicationContextProvider.getApplicationContext();
         //bankBalances for the month
         BankBalanceService bankBalanceService = context.getBean(BankBalanceService.class);
-        this.bankBalances = bankBalanceService.getBankBalanceExpenseByUserIdAndTypeBetweenDates(start, end, userId);
+        this.bankBalances = bankBalanceService.getBankBalanceByUserIdBetweenSpecificDates(start, end, userId);
         //users
         this.outgoingService = context.getBean(OutgoingService.class);
         List<Thread> threadList = List.of(
@@ -68,11 +68,12 @@ public class DataBaseReadHandler {
         });
     }
 
-    public Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
+    private Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
         Map<Integer, DailyStatisticRecord> dsList = new HashMap<>();
         int bankBalance;
-        if(!bankBalances.isEmpty()){
+        if(!bankBalances.isEmpty() && bankBalances.get(0).getDate().getMonth()+1 < month){
             bankBalance = bankBalances.get(0).getAmount();
+
         }
         else{
             bankBalance = 0;
