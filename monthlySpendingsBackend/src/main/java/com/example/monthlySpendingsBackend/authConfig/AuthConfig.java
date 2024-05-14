@@ -27,7 +27,8 @@ public class AuthConfig  {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/register", "/main.css").permitAll();
+                    registry.requestMatchers("/css/**").permitAll();
+                    registry.requestMatchers("/register").permitAll();
                     registry.requestMatchers("/deleteFromDataBase/v1", "/monthlyStatistics/v1/**", "/enterIntoDataBase/v1").authenticated();
                     registry.anyRequest().authenticated();
                 })

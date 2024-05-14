@@ -32,7 +32,6 @@ public class DataBaseWriteAndDeleteHandler {
         this.amount = dbr.amount();
 
         this.date = Date.from(dbr.date().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        System.out.println(date);
 
         ApplicationContext context = ApplicationContextProvider.getApplicationContext();
         //outgoing service

@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 public class AuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     @Override

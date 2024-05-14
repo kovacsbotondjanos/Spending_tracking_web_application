@@ -15,16 +15,16 @@ public class ErrorHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Sorry, this link does not exist");
     }
 
-    @RequestMapping(value = "/**", method = {   GET,
-                                                HEAD,
-                                                POST,
-                                                PUT,
-                                                PATCH,
-                                                DELETE,
-                                                OPTIONS,
-                                                TRACE
-                                            })
-    public ResponseEntity<String> handle405Errors() {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("Sorry, this link does not exist");
-    }
+//    @RequestMapping(value = "/**", method = {   GET,
+//                                                HEAD,
+//                                                POST,
+//                                                PUT,
+//                                                PATCH,
+//                                                DELETE,
+//                                                OPTIONS,
+//                                                TRACE
+//                                            })
+//    public ResponseEntity<String> handle405Errors() {
+//        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("Sorry, this link does not exist");
+//    }
 }

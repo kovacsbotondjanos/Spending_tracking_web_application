@@ -4,7 +4,7 @@
     <title>Monthly statistics</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" th:href="@{/public/main.css}" />
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-transparent">
@@ -16,75 +16,88 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <li class="btn btn-light" th:text="'Hi, ' + ${username}"></li>
-                <a class="btn btn-light" href="/monthlyStatistics/v1">Home</a>
+                <li class="nav-item active mr-3"> <!-- Margin on the right for spacing -->
+                    <span class="nav-link text-white" th:text="'Hi, ' + ${username}"></span>
+                </li>
+                <a class="nav-link active text-white" href="/monthlyStatistics/v1">Home</a>
                 <a class="nav-link active text-white" href="/logout">Log out</a>
             </div>
         </div>
     </div>
 </nav>
-
-<div class="row">
-    <div class="col-4 d-flex justify-content-center align-items-center">
-        <form action="/api/enterIntoDataBase/v1" method="POST">
-            <div class="row">
-                <div class="col">
-                    <label for="dataBaseName">Type of the expense:</label><br>
-                    <select id="dataBaseName" name="dataBaseName">
-                        <option value="GROCERIES" default>GROCERIES</option>
-                        <option value="COMMUTE">COMMUTE</option>
-                        <option value="EXTRA">EXTRA</option>
-                        <option value="RENT">RENT</option>
-                        <option value="INCOME">INCOME</option>
-                    </select>
+<div class="container container-fluid" style="padding-top: 70px;">
+    <div class="row">
+        <div class="col-4 d-flex justify-content-center align-items-center">
+            <form action="/api/enterIntoDataBase/v1" method="POST">
+                <div class="row">
+                    <div class="col">
+                        <label for="dataBaseName">Type of the expense:</label><br>
+                        <select id="dataBaseName" name="dataBaseName">
+                            <option value="GROCERIES" default>GROCERIES</option>
+                            <option value="COMMUTE">COMMUTE</option>
+                            <option value="EXTRA">EXTRA</option>
+                            <option value="RENT">RENT</option>
+                            <option value="INCOME">INCOME</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="amount">Amount:</label><br>
-                    <input type="number" id="amount" name="amount" min=0>
+                <div class="row">
+                    <div class="col">
+                        <label for="amount">Amount:</label><br>
+                        <input type="number" id="amount" name="amount" min=0>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="date">Date of the expense:</label><br>
-                    <input type="date" id="date" name="date">
+                <div class="row">
+                    <div class="col">
+                        <label for="date">Date of the expense:</label><br>
+                        <input type="date" id="date" name="date" th:value="${year} + '-' + ${month} + '-' + ${day}">
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <button type="submit">Submit</button>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit">Submit</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div class="col-4 d-flex justify-content-center align-items-center">
+            <h1 th:text="${time}" />
+        </div>
+        <div class="col-4 d-flex justify-content-center align-items-center">
+            <form >
+                <label for="month">Month to list out</label><br>
+                <input type="month" id="month" th:value="${year} + '-' + ${month}">
+                <button class="fillButton" type="submit">Fill in</button>
+            </form>
+        </div>
     </div>
-</div>
-<div class="row h-100 align-items-center">
-    <div class="col-12  text-center">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Day</th>
-                    <th>Groceries</th>
-                    <th>Commute</th>
-                    <th>Rent</th>
-                    <th>Extra</th>
-                    <th>Income</th>
-                    <th>Bank Balance</th>
+    <div class="row h-100 align-items-center">
+        <div class="col-12  text-center">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Groceries</th>
+                        <th>Commute</th>
+                        <th>Rent</th>
+                        <th>Extra</th>
+                        <th>Income</th>
+                        <th>Bank Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr th:each="data: ${dataFetchedFromDb}">
+                    <td th:text="${data.key} + '.'" />
+                    <td th:text="${data.value.groceries()}" />
+                    <td th:text="${data.value.commute()}" />
+                    <td th:text="${data.value.rent()}" />
+                    <td th:text="${data.value.extra()}" />
+                    <td th:text="${data.value.income()}" />
+                    <td th:text="${data.value.bankBalance()}" />
                 </tr>
-            </thead>
-            <tbody>
-            <tr th:each="data: ${dataFetchedFromDb}">
-                <td th:text="${data.key} + '.'" />
-                <td th:text="${data.value.groceries()}" />
-                <td th:text="${data.value.commute()}" />
-                <td th:text="${data.value.rent()}" />
-                <td th:text="${data.value.extra()}" />
-                <td th:text="${data.value.income()}" />
-                <td th:text="${data.value.bankBalance()}" />
-            </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>
