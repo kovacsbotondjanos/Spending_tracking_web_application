@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 
 @RestController
 public class RegistrationHandler {
@@ -27,8 +25,7 @@ public class RegistrationHandler {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@ModelAttribute UserRegistrationDTO userDetails){
         try{
-            LocalDate today = LocalDate.now();
-            Date date = Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            LocalDate date = LocalDate.now();
             if(userDetails.getName() == null || userDetails.getPassword() == null ||
                     userDetails.getBankBalance() < 0 || userDetails.getEmail() == null){
                 throw new IllegalArgumentException("All fields must be filled in");

@@ -2,10 +2,12 @@ package com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables
 
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
 import jakarta.persistence.*;
+import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
+@Data
 @Table(name = "OUTGOING_EXPENSES")
 public class Outgoing {
     @Id
@@ -15,45 +17,9 @@ public class Outgoing {
     private String type;
 
     @Temporal(TemporalType.DATE)
-    private Date date;
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private CustomUser user;
-
-    public Long getId() {
-        return id;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public CustomUser getUser() {
-        return user;
-    }
-
-    public void setUser(CustomUser user) {
-        this.user = user;
-    }
 }

@@ -28,11 +28,11 @@
 <div class="container container-fluid" style="padding-top: 70px;">
     <div class="row">
         <div class="col-4 d-flex justify-content-center align-items-center">
-            <form action="/api/enterIntoDataBase/v1" method="POST">
+            <form th:action="${'/enterIntoDataBase/v1'}" th:method="POST" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col">
-                        <label for="dataBaseName">Type of the expense:</label><br>
-                        <select id="dataBaseName" name="dataBaseName">
+                        <label for="type">Type of the expense:</label><br>
+                        <select id="type" name="type">
                             <option value="GROCERIES" default>GROCERIES</option>
                             <option value="COMMUTE">COMMUTE</option>
                             <option value="EXTRA">EXTRA</option>

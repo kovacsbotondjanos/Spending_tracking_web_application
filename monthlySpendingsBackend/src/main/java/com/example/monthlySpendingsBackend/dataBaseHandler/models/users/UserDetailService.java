@@ -29,8 +29,8 @@ public class UserDetailService implements UserDetailsService {
         return repository.save(user);
     }
 
-    public CustomUser getUserById(Long id){
-        return repository.getById(id);
+    public Optional<CustomUser> getUserById(Long id){
+        return repository.findById(id);
     }
 
     @Override

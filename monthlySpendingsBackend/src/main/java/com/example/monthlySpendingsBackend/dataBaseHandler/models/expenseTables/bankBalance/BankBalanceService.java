@@ -4,8 +4,8 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUs
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ public class BankBalanceService {
     private BankBalanceRepository repository;
 
     //We return the bank balances of the time between the two dates, additionally we add the last record too
-    public List<BankBalance> getBankBalanceByUserIdBetweenSpecificDates(Date startDate, Date endDate, Long userId){
+    public List<BankBalance> getBankBalanceByUserIdBetweenSpecificDates(LocalDate startDate, LocalDate endDate, Long userId){
         Optional<BankBalance> lastDayBefore = repository.findFirstByUserIdAndDateLessThanOrderByDateDesc(userId, startDate);
         List<BankBalance> balances = new ArrayList<>();
         lastDayBefore.ifPresent(balances::add);
@@ -24,7 +24,7 @@ public class BankBalanceService {
     }
 
     //We have to update the one record of that day and all the records after that
-    public void updateBankBalance(Date date, int fluctuation, CustomUser user){
+    public void updateBankBalance(LocalDate date, int fluctuation, CustomUser user){
         List<BankBalance> balances = repository.findByDateAndUserIdGreaterThanEqual(date, user.getId());
         Optional<BankBalance> balanceOptional = repository.findByDateAndUserId(date, user.getId());
         balanceOptional.ifPresentOrElse(
@@ -33,7 +33,7 @@ public class BankBalanceService {
         );
     }
 
-    public void registerUserWithBalance(Date date, CustomUser user, int balance){
+    public void registerUserWithBalance(LocalDate date, CustomUser user, int balance){
         BankBalance bb = new BankBalance();
         bb.setAmount(balance);
         bb.setUser(user);
@@ -41,7 +41,7 @@ public class BankBalanceService {
         repository.save(bb);
     }
 
-    private void insertBankBalanceForSpecificDayAndUpdateDays(Date date, int fluctuation, CustomUser user, List<BankBalance> balancesAfter){
+    private void insertBankBalanceForSpecificDayAndUpdateDays(LocalDate date, int fluctuation, CustomUser user, List<BankBalance> balancesAfter){
         BankBalance bb = new BankBalance();
         bb.setDate(date);
 
