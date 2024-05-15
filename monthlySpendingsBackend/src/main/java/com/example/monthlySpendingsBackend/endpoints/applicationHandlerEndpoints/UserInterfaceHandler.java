@@ -19,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +61,7 @@ public class UserInterfaceHandler {
         LocalDate date = LocalDate.now();
         String year = Integer.toString(date.getYear());
         String month = Integer.toString(date.getMonthValue());
+        System.out.println("asd");
         return new RedirectView("/monthlyStatistics/v1/" + year + "/" + month);
     }
 
@@ -127,6 +130,18 @@ public class UserInterfaceHandler {
             dataBaseWriteAndDeleteHandler.dataBaseWrite(record);
 
             return new RedirectView("/monthlyStatistics/v1/" + date.getYear() + "/" + date.getMonthValue());
+        }
+        return new RedirectView("/error");
+    }
+
+    @PostMapping("/monthlyStatistics")
+    public RedirectView fillInMonth(@RequestParam("month") String dateString){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDate date = LocalDate.parse(dateString + "-01", formatter);
+            return new RedirectView("/monthlyStatistics/v1/" + date.getYear() + "/" + date.getMonthValue());
+        } catch (DateTimeParseException e) {
+            System.err.println(e.getMessage());
         }
         return new RedirectView("/error");
     }
