@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -68,7 +68,7 @@ public class UserInterfaceHandler {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
 
-                Map<Integer, DailyStatisticRecord> databaseRead = dataBaseReadHandler.getDailyStatisticRecordsByMonth(year, month, userDetails.id());
+                List<DailyStatisticRecord> databaseRead = dataBaseReadHandler.getDailyStatisticRecordsByMonth(year, month, userDetails.id());
                 model.addAttribute("dataFetchedFromDb", databaseRead);
                 model.addAttribute("username", userDetails.getUsername());
 
@@ -122,6 +122,37 @@ public class UserInterfaceHandler {
             record.setUser(user);
             record.setType(type);
             record.setDate(date);
+            record.setAmount(amount);
+
+            dataBaseWriteAndDeleteHandler.dataBaseWrite(record);
+
+            return new RedirectView("/monthlyStatistics/v1/" + date.getYear() + "/" + date.getMonthValue());
+        }
+        return new RedirectView("/error");
+    }
+
+    @DeleteMapping("/deleteFromDataBase/v1")
+    public RedirectView deleteRecordFromDataBase(@RequestParam("type") String type,
+                                                 @RequestParam("date") LocalDate date,
+                                                 @RequestParam("amount") int amount){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+
+            Optional<CustomUser> userOptional = userDetailService.getUserById(userDetails.id());
+
+            if(userOptional.isEmpty()){
+                return new RedirectView("/error");
+            }
+
+            CustomUser user = userOptional.get();
+
+            Outgoing record = new Outgoing();
+            record.setUser(user);
+            record.setType(type);
+            record.setDate(date);
+            record.setAmount(amount);
+
+            dataBaseWriteAndDeleteHandler.dataBaseDelete(record);
 
             return new RedirectView("/monthlyStatistics/v1/" + date.getYear() + "/" + date.getMonthValue());
         }

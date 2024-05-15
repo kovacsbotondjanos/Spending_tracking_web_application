@@ -5,7 +5,6 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalanceService;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.Outgoing;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.OutgoingService;
-import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +27,12 @@ public class DataBaseReadHandler {
     }
 
 
-    public Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonth(int year, int month, Long userId) {
-        Map<Integer, DailyStatisticRecord> dsList = new HashMap<>();
+    public List<DailyStatisticRecord> getDailyStatisticRecordsByMonth(int year, int month, Long userId) {
+        List<DailyStatisticRecord> dsList = new ArrayList<>();
         LocalDate start = LocalDate.of(year, month, 1);
         int lastDay = start.lengthOfMonth();
         LocalDate end = LocalDate.of(year, month, lastDay);
-
+        //TODO: fix these maps, user list instead
         Future<Map<LocalDate, List<Integer>>> groceriesFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("GROCERIES", start, end, userId));
         Future<Map<LocalDate, List<Integer>>> commuteFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("COMMUTE", start, end, userId));
         Future<Map<LocalDate, List<Integer>>> extraFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("EXTRA", start, end, userId));
@@ -87,7 +86,7 @@ public class DataBaseReadHandler {
                         incomeAmount,
                         incomeList,
                         bankBalance);
-                dsList.put(i, dsr);
+                dsList.add(dsr);
             }
         }
         catch (InterruptedException | ExecutionException e){

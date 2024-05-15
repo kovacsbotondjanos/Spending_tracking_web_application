@@ -86,15 +86,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr th:each="data: ${dataFetchedFromDb}">
-                    <td th:text="${data.key} + '.'" />
-                    <td th:text="${data.value.groceries()}" />
-                    <td th:text="${data.value.commute()}" />
-                    <td th:text="${data.value.rent()}" />
-                    <td th:text="${data.value.extra()}" />
-                    <td th:text="${data.value.income()}" />
-                    <td th:text="${data.value.bankBalance()}" />
-                </tr>
+                    <tr th:each="data, index: ${dataFetchedFromDb}">
+                        <td th:text="${index.index + 1 + '.'}"></td>
+                        <td th:text="${data.groceries()}"></td>
+                        <td th:text="${data.commute()}"></td>
+                        <td th:text="${data.rent()}"></td>
+                        <td th:text="${data.extra()}"></td>
+                        <td th:text="${data.income()}"></td>
+                        <td th:text="${data.bankBalance()}"></td>
+                    </tr>
                 </tbody>
             </table>
         </div>

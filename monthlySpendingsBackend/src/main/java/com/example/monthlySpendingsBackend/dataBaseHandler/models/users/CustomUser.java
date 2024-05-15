@@ -1,7 +1,11 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.models.users;
 
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalance;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.Outgoing;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -14,4 +18,10 @@ public class CustomUser {
     private String email;
     private String password;
     private String role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<BankBalance> bankBalances;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Outgoing> outgoings;
 }
