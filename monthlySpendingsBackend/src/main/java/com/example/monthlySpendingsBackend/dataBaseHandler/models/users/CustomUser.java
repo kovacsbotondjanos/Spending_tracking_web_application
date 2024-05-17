@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -26,4 +28,22 @@ public class CustomUser {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Outgoing> outgoings;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+    }
 }
