@@ -89,7 +89,7 @@ public class DataBaseReadHandler {
             }
         }
         catch (InterruptedException | ExecutionException e){
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
         return dsList;
     }
