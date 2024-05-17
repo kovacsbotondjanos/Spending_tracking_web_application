@@ -27,7 +27,7 @@ public class BankBalanceService {
     public void updateBankBalance(LocalDate date, int fluctuation, CustomUser user){
         List<BankBalance> balances = repository.findByUserIdAndDateGreaterThanEqual(user.getId(), date);
 
-        if(balances.isEmpty() || !balances.get(0).getDate().equals(date)){
+        if(balances.isEmpty() || balances.stream().noneMatch(b -> b.getDate().equals(date))){
             insertBankBalanceForSpecificDayAndUpdateDays(date, fluctuation, user, balances);
         }
         else{
