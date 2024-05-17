@@ -25,19 +25,26 @@ public class BankBalanceService {
 
     //We have to update the one record of that day and all the records after that
     public void updateBankBalance(LocalDate date, int fluctuation, CustomUser user){
-        List<BankBalance> balances = repository.findByDateAndUserIdGreaterThanEqual(date, user.getId());
-        Optional<BankBalance> balanceOptional = repository.findByDateAndUserId(date, user.getId());
-        balanceOptional.ifPresentOrElse(
-                bankBalance -> balances.forEach(bb -> updateBankBalanceForSpecificDay(bb, fluctuation)),
-                () -> insertBankBalanceForSpecificDayAndUpdateDays(date, fluctuation, user, balances)
-        );
+        List<BankBalance> balances = repository.findByUserIdAndDateGreaterThanEqual(user.getId(), date);
+
+        if(balances.isEmpty() || !balances.get(0).getDate().equals(date)){
+            insertBankBalanceForSpecificDayAndUpdateDays(date, fluctuation, user, balances);
+        }
+        else{
+            balances.forEach(bb -> updateBankBalanceForSpecificDay(bb, fluctuation));
+        }
     }
 
-    public void registerUserWithBalance(LocalDate date, CustomUser user, int balance){
+    public void registerUserWithBalance(LocalDate date, CustomUser user, int balance) throws IllegalArgumentException {
+        if(balance < 0){
+            throw new IllegalArgumentException("The bank balance have to be a positive number");
+        }
+
         BankBalance bb = new BankBalance();
         bb.setAmount(balance);
         bb.setUser(user);
         bb.setDate(date);
+
         repository.save(bb);
     }
 
@@ -46,17 +53,22 @@ public class BankBalanceService {
         bb.setDate(date);
 
         Optional<BankBalance> balanceBefore = repository.findFirstByUserIdAndDateLessThanOrderByDateDesc(user.getId(), date);
+
         balanceBefore.ifPresentOrElse(
                 balance -> bb.setAmount(balance.getAmount() + fluctuation),
                 () -> bb.setAmount(fluctuation)
         );
 
+        balancesAfter.forEach(b -> updateBankBalanceForSpecificDay(b, fluctuation));
+
         bb.setUser(user);
+
         repository.save(bb);
     }
 
     private void updateBankBalanceForSpecificDay(BankBalance balance, int fluctuation){
-        balance.setAmount(balance.getAmount() - fluctuation);
+        balance.setAmount(balance.getAmount() + fluctuation);
+
         repository.save(balance);
     }
 }

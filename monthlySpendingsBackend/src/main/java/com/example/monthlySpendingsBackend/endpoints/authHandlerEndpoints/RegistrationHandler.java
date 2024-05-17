@@ -3,11 +3,9 @@ package com.example.monthlySpendingsBackend.endpoints.authHandlerEndpoints;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalanceService;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.CustomUser;
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserDetailService;
-import com.example.monthlySpendingsBackend.dataBaseHandler.models.users.UserRegistrationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
 
@@ -23,27 +21,28 @@ public class RegistrationHandler {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@ModelAttribute UserRegistrationDTO userDetails){
+    public RedirectView registerUser(@RequestParam("password") String password,
+                                    @RequestParam("email") String email,
+                                    @RequestParam("name") String name,
+                                    @RequestParam("bankBalance") int bankBalance){
         try{
             LocalDate date = LocalDate.now();
-            if(userDetails.getName() == null || userDetails.getPassword() == null ||
-                    userDetails.getBankBalance() < 0 || userDetails.getEmail() == null){
+            if(password == null || email == null || name == null){
                 throw new IllegalArgumentException("All fields must be filled in");
             }
+
             CustomUser user = new CustomUser();
-            user.setPassword(userDetails.getPassword());
-            user.setEmail(userDetails.getEmail());
-            user.setUsername(userDetails.getName());
+            user.setPassword(password);
+            user.setEmail(email);
+            user.setUsername(name);
             user.setRole("USER");
+
             userService.registerUser(user);
-            bankBalanceService.registerUserWithBalance(date, user, userDetails.getBankBalance());
-            return new ResponseEntity<>("Successfully created user", HttpStatus.CREATED);
+            bankBalanceService.registerUserWithBalance(date, user, bankBalance);
+            return new RedirectView("/monthlyStatistics/v1");
         }
-        catch(IllegalArgumentException ie){
-            return new ResponseEntity<>("This username or email is already taken, " + ie.getMessage(), HttpStatus.CONFLICT);
-        }
-        catch (Exception e){
-            return new ResponseEntity<>("Something went wrong while creating you account, " + e.getMessage(), HttpStatus.CONFLICT);
+        catch(Exception e){
+            return new RedirectView("/register?error=" + e.getMessage());
         }
     }
 }

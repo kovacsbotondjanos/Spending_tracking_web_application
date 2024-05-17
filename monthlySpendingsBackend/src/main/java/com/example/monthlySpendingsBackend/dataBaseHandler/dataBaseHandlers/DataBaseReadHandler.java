@@ -32,20 +32,19 @@ public class DataBaseReadHandler {
         LocalDate start = LocalDate.of(year, month, 1);
         int lastDay = start.lengthOfMonth();
         LocalDate end = LocalDate.of(year, month, lastDay);
-        //TODO: fix these maps, user list instead
-        Future<Map<LocalDate, List<Integer>>> groceriesFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("GROCERIES", start, end, userId));
-        Future<Map<LocalDate, List<Integer>>> commuteFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("COMMUTE", start, end, userId));
-        Future<Map<LocalDate, List<Integer>>> extraFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("EXTRA", start, end, userId));
-        Future<Map<LocalDate, List<Integer>>> rentFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("RENT", start, end, userId));
-        Future<Map<LocalDate, List<Integer>>> incomeFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("INCOME", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> groceriesFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("GROCERIES", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> commuteFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("COMMUTE", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> extraFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("EXTRA", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> rentFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("RENT", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> incomeFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("INCOME", start, end, userId));
         Future<List<BankBalance>> bankBalancesFuture = CompletableFuture.supplyAsync(() -> bankBalanceService.getBankBalanceByUserIdBetweenSpecificDates(start, end, userId));
 
         try{
-            Map<LocalDate, List<Integer>> groceries = groceriesFuture.get();
-            Map<LocalDate, List<Integer>> commute = commuteFuture.get();
-            Map<LocalDate, List<Integer>> extra = extraFuture.get();
-            Map<LocalDate, List<Integer>> rent = rentFuture.get();
-            Map<LocalDate, List<Integer>> income = incomeFuture.get();
+            Map<LocalDate, List<Outgoing>> groceries = groceriesFuture.get();
+            Map<LocalDate, List<Outgoing>> commute = commuteFuture.get();
+            Map<LocalDate, List<Outgoing>> extra = extraFuture.get();
+            Map<LocalDate, List<Outgoing>> rent = rentFuture.get();
+            Map<LocalDate, List<Outgoing>> income = incomeFuture.get();
             List<BankBalance> bankBalances = bankBalancesFuture.get();
             int bankBalance;
             if(!bankBalances.isEmpty() && bankBalances.get(0).getDate().getMonthValue() < month){
@@ -64,15 +63,15 @@ public class DataBaseReadHandler {
                     bankBalance = balanceOptional.get().getAmount();
                 }
 
-                List<Integer> groceriesList = new ArrayList<>();
+                List<Outgoing> groceriesList = new ArrayList<>();
                 int groceriesAmount = setGivenListAccordingToMapAndReturnWithSum(groceriesList, groceries, date);
-                List<Integer> commuteList = new ArrayList<>();
+                List<Outgoing> commuteList = new ArrayList<>();
                 int commuteAmount = setGivenListAccordingToMapAndReturnWithSum(commuteList, commute, date);
-                List<Integer> extraList = new ArrayList<>();
+                List<Outgoing> extraList = new ArrayList<>();
                 int extraAmount = setGivenListAccordingToMapAndReturnWithSum(extraList, extra, date);
-                List<Integer> rentList = new ArrayList<>();
+                List<Outgoing> rentList = new ArrayList<>();
                 int rentAmount = setGivenListAccordingToMapAndReturnWithSum(rentList, rent, date);
-                List<Integer> incomeList = new ArrayList<>();
+                List<Outgoing> incomeList = new ArrayList<>();
                 int incomeAmount = setGivenListAccordingToMapAndReturnWithSum(incomeList, income, date);
                 DailyStatisticRecord dsr = new DailyStatisticRecord(
                         groceriesAmount,
@@ -95,30 +94,29 @@ public class DataBaseReadHandler {
         return dsList;
     }
 
-    private int setGivenListAccordingToMapAndReturnWithSum(List<Integer> actualList, Map<LocalDate, List<Integer>> actualMap, LocalDate date){
+    private int setGivenListAccordingToMapAndReturnWithSum(List<Outgoing> actualList, Map<LocalDate, List<Outgoing>> actualMap, LocalDate date){
         if(actualMap.containsKey(date)){
             actualList.addAll(actualMap.get(date));
-            return actualList.stream().mapToInt(Integer::intValue).sum();
+            return actualList.stream().map(Outgoing::getAmount).mapToInt(Integer::intValue).sum();
         }
         else{
             return 0;
         }
     }
 
-    private Map<LocalDate, List<Integer>> dataBaseQueryByMonth(String dbName, LocalDate start, LocalDate end, Long userId){
-        Map<LocalDate, List<Integer>> dateToInt = new HashMap<>();
+    private Map<LocalDate, List<Outgoing>> dataBaseQueryByMonth(String dbName, LocalDate start, LocalDate end, Long userId){
+        Map<LocalDate, List<Outgoing>> dateToInt = new HashMap<>();
 
         List<Outgoing> expenses = outgoingService.getOutgoingExpenseByUserIdAndTypeBetweenDates(start, end, userId, dbName);
 
         expenses.forEach(e -> {
             LocalDate date = e.getDate();
-            int amount = e.getAmount();
             if(dateToInt.containsKey(date)){
-                dateToInt.get(date).add(amount);
+                dateToInt.get(date).add(e);
             }
             else{
-                List<Integer> initList = new ArrayList<>();
-                initList.add(amount);
+                List<Outgoing> initList = new ArrayList<>();
+                initList.add(e);
                 dateToInt.put(date, initList);
             }
         });

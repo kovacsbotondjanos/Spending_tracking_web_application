@@ -4,12 +4,14 @@ import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.
 import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.Outgoing;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "USER")
+@ToString(exclude = {"outgoings", "bankBalances"})
 public class CustomUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

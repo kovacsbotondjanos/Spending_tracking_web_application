@@ -25,6 +25,10 @@ public class OutgoingService {
         return repository.findByDateBetweenAndUserIdAndType(startDate, endDate, userId, type);
     }
 
+    public Optional<Outgoing> getOutgoingByUserAndId(CustomUser user, Long id){
+        return repository.findByUserAndId(user, id);
+    }
+
     public Outgoing insertExpenseRecord(Outgoing expense) throws IllegalArgumentException {
         if(!possibleTypes.contains(expense.getType())){
             throw new IllegalArgumentException("Please provide valid data");
@@ -36,12 +40,11 @@ public class OutgoingService {
         String type = expense.getType();
 
         if (expense.getType().equals("INCOME")) {
-            bankBalanceService.updateBankBalance(date, -amount, user);
-        }
-        else {
             bankBalanceService.updateBankBalance(date, amount, user);
         }
-
+        else {
+            bankBalanceService.updateBankBalance(date, -amount, user);
+        }
 
         Outgoing out = new Outgoing();
         out.setDate(date);
@@ -57,16 +60,16 @@ public class OutgoingService {
         CustomUser user = expense.getUser();
         String type = expense.getType();
 
-        Optional<Outgoing> optionalExpense = repository.findByDateAndUserIdAndAmountAndType(date, user.getId(), amount, type);
+        Optional<Outgoing> optionalExpense = repository.findById(expense.getId());
 
         if(optionalExpense.isEmpty()){
             throw new IllegalArgumentException("Please provide a record with existing data");
         }
 
         if (type.equals("INCOME")) {
-            bankBalanceService.updateBankBalance(date, amount, user);
-        } else {
             bankBalanceService.updateBankBalance(date, -amount, user);
+        } else {
+            bankBalanceService.updateBankBalance(date, amount, user);
         }
 
         optionalExpense.ifPresent(repository::delete);

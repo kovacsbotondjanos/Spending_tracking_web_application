@@ -61,7 +61,6 @@ public class UserInterfaceHandler {
         LocalDate date = LocalDate.now();
         String year = Integer.toString(date.getYear());
         String month = Integer.toString(date.getMonthValue());
-        System.out.println("asd");
         return new RedirectView("/monthlyStatistics/v1/" + year + "/" + month);
     }
 
@@ -97,6 +96,7 @@ public class UserInterfaceHandler {
                 model.addAttribute("year", currYear);
                 model.addAttribute("month", currMonth);
                 model.addAttribute("day", currDay);
+
                 return "index.html";
             }
             return "error";
@@ -127,6 +127,8 @@ public class UserInterfaceHandler {
             record.setDate(date);
             record.setAmount(amount);
 
+            System.out.println(record);
+
             dataBaseWriteAndDeleteHandler.dataBaseWrite(record);
 
             return new RedirectView("/monthlyStatistics/v1/" + date.getYear() + "/" + date.getMonthValue());
@@ -146,10 +148,8 @@ public class UserInterfaceHandler {
         return new RedirectView("/error");
     }
 
-    @DeleteMapping("/deleteFromDataBase/v1")
-    public RedirectView deleteRecordFromDataBase(@RequestParam("type") String type,
-                                                 @RequestParam("date") LocalDate date,
-                                                 @RequestParam("amount") int amount){
+    @DeleteMapping("/deleteFromDataBase/v1/{id}")
+    public RedirectView deleteRecordFromDataBase(@PathVariable Long id){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
 
@@ -161,15 +161,15 @@ public class UserInterfaceHandler {
 
             CustomUser user = userOptional.get();
 
-            Outgoing record = new Outgoing();
-            record.setUser(user);
-            record.setType(type);
-            record.setDate(date);
-            record.setAmount(amount);
+            Optional<Outgoing> expense = outgoingService.getOutgoingByUserAndId(user, id);
 
-            dataBaseWriteAndDeleteHandler.dataBaseDelete(record);
+            if(expense.isEmpty()){
+                return new RedirectView("/error");
+            }
 
-            return new RedirectView("/monthlyStatistics/v1/" + date.getYear() + "/" + date.getMonthValue());
+            dataBaseWriteAndDeleteHandler.dataBaseDelete(expense.get());
+
+            return new RedirectView("/monthlyStatistics/v1/" + expense.get().getDate().getYear() + "/" + expense.get().getDate().getMonthValue());
         }
         return new RedirectView("/error");
     }

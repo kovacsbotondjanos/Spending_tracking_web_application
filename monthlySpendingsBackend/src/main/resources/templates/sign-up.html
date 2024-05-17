@@ -1,52 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script th:src="@{/public/main.js}"></script>
+    <link rel="stylesheet" th:href="@{/public/main.css}" />
     <title>Sign up</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-dark">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav  ms-auto">
-            <li class=" nav-item ms-2 ml-2">
-                <a class="btn bg-light" href="/register">Create an account</a>
-            </li>
-        </ul>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link active text-white" href="/login">Log in</a>
+            </div>
+        </div>
     </div>
 </nav>
-<div class="row h-100 align-items-center">
-    <div class="col-12  text-center">
-        <h2>Sign up</h2>
-        <form action="/register" method="post">
-            <div class="m-10">
-                <label for="name">Username:</label>
-                <br>
-                <input type="text" id="name" name="name" required>
-                <br>
-                <label for="email">E-mail:</label>
-                <br>
-                <input type="text" id="email" name="email" required>
-                <br>
-                <label for="password">Password:</label>
-                <br>
-                <input type="password" id="password" name="password" required>
-                <br>
-                <label for="bankBalance">Bank balance:</label>
-                <br>
-                <input type="number" id="bankBalance" name="bankBalance" required>
+<div class="container container-fluid" style="padding-top: 70px;">
+    <div class="row">
+        <div class="wrapper">
+            <div class="form-box login">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Sign up</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <form action="/register" method="post">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-box">
+                                        <label class="button-label">Username</label><br>
+                                        <span class="icon"><ion-icon name="pricetag-outline"></ion-icon></span>
+                                        <input type="text" id="name" name="name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-box">
+                                        <label class="button-label">Email</label><br>
+                                        <span class="icon"><ion-icon name="mail-outline"></ion-icon></span>
+                                        <input type="text" id="email" name="email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-box">
+                                        <label class="button-label">Password</label><br>
+                                        <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+                                        <input type="text" id="password" name="password" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="input-box">
+                                        <label class="button-label">Bank balance:</label><br>
+                                        <span class="icon"><ion-icon name="cash-outline"></ion-icon></span>
+                                        <input type="text" id="bankBalance" name="bankBalance" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="login-button"><button class="button login-button" id="submit-btn" type="submit">Sign up</button></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <br>
-            <div class="m-10">
-                <button class=" btn btn-dark" type="submit">Sign up</button>
-            </div>
-            <br>
-        </form>
+        </div>
     </div>
 </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </html>

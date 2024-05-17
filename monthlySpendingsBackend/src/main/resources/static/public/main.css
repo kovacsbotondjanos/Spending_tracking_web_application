@@ -98,14 +98,6 @@ html {
   font-weight: normal;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
 @media (hover: hover) {
   a:hover {
     background-color: hsl(0, 0%, 100%);
@@ -209,7 +201,7 @@ a:hover {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #000000;
+  background-color: #181818;
   color: white;
   padding: 10px 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0);
@@ -236,6 +228,24 @@ div.login-button {
 span {
   margin-right: 10px;
 }
+
 input {
   margin-right: 5px;
+}
+
+.hiddenRow {
+  display: none;
+}
+
+.custom-button {
+    all: unset !important;
+    background-color: transparent !important;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
 }
