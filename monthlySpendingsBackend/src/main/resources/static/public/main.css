@@ -126,6 +126,7 @@ html {
 button {
   padding: 10px 20px;
   border-radius: 50px;
+  border: none;
   font-size: 16px;
 }
 
@@ -238,14 +239,14 @@ input {
 }
 
 .custom-button {
-    all: unset !important;
+    all: unset;
     background-color: transparent !important;
 }
 
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: hsla(160, 100%, 37%, 1) !important;
   transition: 0.4s;
   padding: 3px;
 }
