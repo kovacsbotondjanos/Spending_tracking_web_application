@@ -12,6 +12,9 @@ import java.util.Date;
 @Table(name = "BANKBALANCE")
 public class BankBalance {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Temporal(TemporalType.DATE)
     private LocalDate date;
 
