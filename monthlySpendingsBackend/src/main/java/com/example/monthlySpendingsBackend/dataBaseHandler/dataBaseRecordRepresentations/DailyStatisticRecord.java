@@ -1,16 +1,18 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations;
 
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.Outgoing;
+
 import java.util.List;
 
 public record DailyStatisticRecord(
        int groceries,
-       List<Integer> groceriesList,
+       List<Outgoing> groceriesList,
        int commute,
-       List<Integer> commuteList,
+       List<Outgoing> commuteList,
        int extra,
-       List<Integer> extraList,
+       List<Outgoing> extraList,
        int rent,
-       List<Integer> rentList,
+       List<Outgoing> rentList,
        int income,
-       List<Integer> incomeList,
+       List<Outgoing> incomeList,
        int bankBalance) { }

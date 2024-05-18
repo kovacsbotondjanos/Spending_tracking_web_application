@@ -1,128 +1,125 @@
 package com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseHandlers;
 
-import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.BankBalanceHandler;
-import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseInterActionHandlers.DatabaseHandler;
 import com.example.monthlySpendingsBackend.dataBaseHandler.dataBaseRecordRepresentations.DailyStatisticRecord;
-import com.example.monthlySpendingsBackend.envVariableHandler.EnvVariableHandlerSingleton;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalance;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.bankBalance.BankBalanceService;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.Outgoing;
+import com.example.monthlySpendingsBackend.dataBaseHandler.models.expenseTables.outgoing.OutgoingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.*;
-import java.util.stream.IntStream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-public class DataBaseReadHandler{
-    private final int year;
-    private final int month;
-    private Map<Date, List<Integer>> groceries;
-    private Map<Date, List<Integer>> commute;
-    private Map<Date, List<Integer>> extra;
-    private Map<Date, List<Integer>> rent;
-    private Map<Date, List<Integer>> income;
-    private final int lastDay;
-    private final Connection connection;
+@Service
+public class DataBaseReadHandler {
+    @Autowired
+    private final OutgoingService outgoingService;
+    @Autowired
+    private final BankBalanceService bankBalanceService;
 
-    public static Map<Integer, DailyStatisticRecord> DataBaseRead(String year, String month) throws SQLException {
-        return (new DataBaseReadHandler(year, month)).getDailyStatisticRecordsByMonthByOnlyOneQuery();
+    public DataBaseReadHandler(OutgoingService outgoingService, BankBalanceService bankBalanceService) {
+        this.outgoingService = outgoingService;
+        this.bankBalanceService = bankBalanceService;
     }
 
-    private DataBaseReadHandler(String year, String month) throws DateTimeException, NumberFormatException, SQLException{
-        this.year = Integer.parseInt(year);
-        this.month = Integer.parseInt(month);
 
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", EnvVariableHandlerSingleton.getUsername());
-        connectionProps.put("password", EnvVariableHandlerSingleton.getPassword());
-        connectionProps.put("serverTimezone", EnvVariableHandlerSingleton.getTimeZone());
-        connectionProps.put("sessionTimezone", EnvVariableHandlerSingleton.getTimeZone());
-        String dbURL = EnvVariableHandlerSingleton.getDataBaseURL();
-        connection = DriverManager.getConnection(dbURL, connectionProps);
+    public List<DailyStatisticRecord> getDailyStatisticRecordsByMonth(int year, int month, Long userId) {
+        List<DailyStatisticRecord> dsList = new ArrayList<>();
+        LocalDate start = LocalDate.of(year, month, 1);
+        int lastDay = start.lengthOfMonth();
+        LocalDate end = LocalDate.of(year, month, lastDay);
+        Future<Map<LocalDate, List<Outgoing>>> groceriesFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("GROCERIES", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> commuteFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("COMMUTE", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> extraFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("EXTRA", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> rentFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("RENT", start, end, userId));
+        Future<Map<LocalDate, List<Outgoing>>> incomeFuture = CompletableFuture.supplyAsync(() -> dataBaseQueryByMonth("INCOME", start, end, userId));
+        Future<List<BankBalance>> bankBalancesFuture = CompletableFuture.supplyAsync(() -> bankBalanceService.getBankBalanceByUserIdBetweenSpecificDates(start, end, userId));
 
-        lastDay = YearMonth.of(this.year, this.month).atEndOfMonth().getDayOfMonth();
-        List<Thread> threadList = List.of(
-                new Thread(() -> this.groceries = dataBaseQueryByMonth("GROCERIES")),
-                new Thread(() -> this.commute = dataBaseQueryByMonth("COMMUTE")),
-                new Thread(() -> this.extra = dataBaseQueryByMonth("EXTRA")),
-                new Thread(() -> this.rent = dataBaseQueryByMonth("RENT")),
-                new Thread(() -> this.income = dataBaseQueryByMonth("INCOME"))
-        );
-        for(Thread t : threadList){
-            t.start();
-        }
-        for(Thread t : threadList){
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                System.err.println(e.getMessage());
+        try{
+            Map<LocalDate, List<Outgoing>> groceries = groceriesFuture.get();
+            Map<LocalDate, List<Outgoing>> commute = commuteFuture.get();
+            Map<LocalDate, List<Outgoing>> extra = extraFuture.get();
+            Map<LocalDate, List<Outgoing>> rent = rentFuture.get();
+            Map<LocalDate, List<Outgoing>> income = incomeFuture.get();
+            List<BankBalance> bankBalances = bankBalancesFuture.get();
+            int bankBalance;
+            if(!bankBalances.isEmpty() && bankBalances.get(0).getDate().getMonthValue() < month){
+                bankBalance = bankBalances.get(0).getAmount();
+
+            }
+            else{
+                bankBalance = 0;
+            }
+            for(int i = 1; i <= lastDay; i++){
+                TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+                LocalDate date = LocalDate.of(year, month, i);
+
+                Optional<BankBalance> balanceOptional = bankBalances.stream().filter(bb -> date.equals(bb.getDate())).findFirst();
+                if(balanceOptional.isPresent()){
+                    bankBalance = balanceOptional.get().getAmount();
+                }
+
+                List<Outgoing> groceriesList = new ArrayList<>();
+                int groceriesAmount = setGivenListAccordingToMapAndReturnWithSum(groceriesList, groceries, date);
+                List<Outgoing> commuteList = new ArrayList<>();
+                int commuteAmount = setGivenListAccordingToMapAndReturnWithSum(commuteList, commute, date);
+                List<Outgoing> extraList = new ArrayList<>();
+                int extraAmount = setGivenListAccordingToMapAndReturnWithSum(extraList, extra, date);
+                List<Outgoing> rentList = new ArrayList<>();
+                int rentAmount = setGivenListAccordingToMapAndReturnWithSum(rentList, rent, date);
+                List<Outgoing> incomeList = new ArrayList<>();
+                int incomeAmount = setGivenListAccordingToMapAndReturnWithSum(incomeList, income, date);
+                DailyStatisticRecord dsr = new DailyStatisticRecord(
+                        groceriesAmount,
+                        groceriesList,
+                        commuteAmount,
+                        commuteList,
+                        extraAmount,
+                        extraList,
+                        rentAmount,
+                        rentList,
+                        incomeAmount,
+                        incomeList,
+                        bankBalance);
+                dsList.add(dsr);
             }
         }
-    }
-
-    private Map<Integer, DailyStatisticRecord> getDailyStatisticRecordsByMonthByOnlyOneQuery(){
-        Map<Integer, DailyStatisticRecord> dsList = new HashMap<>();
-        IntStream.rangeClosed(1, lastDay).forEach(i -> {
-            TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-            LocalDate localDate = LocalDate.of(year, month, i);
-            Date date = Date.valueOf(localDate);
-            List<Integer> groceriesList = new ArrayList<>();
-            int groceriesAmount = setGivenListAccordingToMapAndReturnWithSum(groceriesList, groceries, date);
-            List<Integer> commuteList = new ArrayList<>();
-            int commuteAmount = setGivenListAccordingToMapAndReturnWithSum(commuteList, commute, date);
-            List<Integer> extraList = new ArrayList<>();
-            int extraAmount = setGivenListAccordingToMapAndReturnWithSum(extraList, extra, date);
-            List<Integer> rentList = new ArrayList<>();
-            int rentAmount = setGivenListAccordingToMapAndReturnWithSum(rentList, rent, date);
-            List<Integer> incomeList = new ArrayList<>();
-            int incomeAmount = setGivenListAccordingToMapAndReturnWithSum(incomeList, income, date);
-            DailyStatisticRecord dsr = new DailyStatisticRecord(
-                    groceriesAmount,
-                    groceriesList,
-                    commuteAmount,
-                    commuteList,
-                    extraAmount,
-                    extraList,
-                    rentAmount,
-                    rentList,
-                    incomeAmount,
-                    incomeList,
-                    getBankBalanceFromDataBase(i));
-            dsList.put(i, dsr);
-        });
+        catch (InterruptedException | ExecutionException e){
+            System.err.println(e.getMessage());
+        }
         return dsList;
     }
-    private int getBankBalanceFromDataBase(int day){
-        try {
-            return (new BankBalanceHandler(connection)).getBankBalanceByGivenDay(year, month, day);
-        }
-        catch(SQLException e){
-            System.err.println(e.getMessage());
-        }
-        catch(Exception e){
-            System.err.println(e.getMessage());
-        }
-        return 0;
-    }
 
-    private int setGivenListAccordingToMapAndReturnWithSum(List<Integer> actualList, Map<Date, List<Integer>> actualMap, Date date){
+    private int setGivenListAccordingToMapAndReturnWithSum(List<Outgoing> actualList, Map<LocalDate, List<Outgoing>> actualMap, LocalDate date){
         if(actualMap.containsKey(date)){
             actualList.addAll(actualMap.get(date));
-            return actualList.stream().mapToInt(Integer::intValue).sum();
+            return actualList.stream().map(Outgoing::getAmount).mapToInt(Integer::intValue).sum();
         }
         else{
             return 0;
         }
     }
 
-    private Map<Date, List<Integer>> dataBaseQueryByMonth(String dbName){
-        try{
-            return (new DatabaseHandler(dbName, connection)).getExpensesByGivenMonth(year, month);
-        }catch (SQLException e){
-            System.err.println(e.getMessage());
-            return (new HashMap<>());
-        }
+    private Map<LocalDate, List<Outgoing>> dataBaseQueryByMonth(String dbName, LocalDate start, LocalDate end, Long userId){
+        Map<LocalDate, List<Outgoing>> dateToInt = new HashMap<>();
+
+        List<Outgoing> expenses = outgoingService.getOutgoingExpenseByUserIdAndTypeBetweenDates(start, end, userId, dbName);
+
+        expenses.forEach(e -> {
+            LocalDate date = e.getDate();
+            if(dateToInt.containsKey(date)){
+                dateToInt.get(date).add(e);
+            }
+            else{
+                List<Outgoing> initList = new ArrayList<>();
+                initList.add(e);
+                dateToInt.put(date, initList);
+            }
+        });
+        return dateToInt;
     }
 }
