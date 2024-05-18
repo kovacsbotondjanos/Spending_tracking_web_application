@@ -31,7 +31,7 @@ public class BankBalanceService {
             insertBankBalanceForSpecificDayAndUpdateDays(date, fluctuation, user, balances);
         }
         else{
-            balances.forEach(bb -> updateBankBalanceForSpecificDay(bb, fluctuation));
+            balances.stream().parallel().forEach(bb -> updateBankBalanceForSpecificDay(bb, fluctuation));
         }
     }
 
@@ -59,7 +59,7 @@ public class BankBalanceService {
                 () -> bb.setAmount(fluctuation)
         );
 
-        balancesAfter.forEach(b -> updateBankBalanceForSpecificDay(b, fluctuation));
+        balancesAfter.stream().parallel().forEach(b -> updateBankBalanceForSpecificDay(b, fluctuation));
 
         bb.setUser(user);
 
