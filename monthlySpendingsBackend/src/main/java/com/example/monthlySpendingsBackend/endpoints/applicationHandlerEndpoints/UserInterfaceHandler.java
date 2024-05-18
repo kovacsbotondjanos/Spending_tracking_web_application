@@ -127,8 +127,6 @@ public class UserInterfaceHandler {
             record.setDate(date);
             record.setAmount(amount);
 
-            System.out.println(record);
-
             dataBaseWriteAndDeleteHandler.dataBaseWrite(record);
 
             return new RedirectView("/monthlyStatistics/v1/" + date.getYear() + "/" + date.getMonthValue());
